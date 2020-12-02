@@ -55,3 +55,25 @@ exports.addCategory = (request, response) => {
     response.status(500).send('Erro ao adicionar categoria ao servico\n\n' + err);
   })
 }
+
+exports.removeCategory = (request, response) => {
+  Service.removeCategory(request.params.idService, request.params.idCategory)
+  .then(res => {
+    response.send(`Categoria removida ao servico`)
+  })
+  .catch(err => {
+    console.log(err);
+    response.status(500).send('Erro ao remover categoria do servico\n\n' + err);
+  })
+}
+
+exports.getCategories = (request, response) => {
+  Service.getCategories(request.params.id)
+  .then(res => {
+    response.json(res);
+  })
+  .catch(err => {
+    console.log(err);
+    response.status(500).send(err);
+  })
+}

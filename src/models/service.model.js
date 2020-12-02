@@ -19,8 +19,17 @@ Service.find = async (idService = undefined) => {
     return result[0][0];
   }  
 
-  result = await con.query('SELECT * FROM tb_services');
-  return result[0];
+  // find by category
+  else if (idCategory) {
+    providers = await con.query('SELECT s.* FROM tb_services s, tb_categories_services cs WHERE s.idProvider = cs.idProvider AND cs.idCategory = ?', idCategory);
+    return providers[0];
+  }
+  
+  //find all
+  else {
+    providers = await con.query('SELECT * FROM tb_services');
+    return providers[0];
+  }
 }
 
 Service.create = async (service) => {
@@ -40,8 +49,18 @@ Service.delete = async (id) => {
   return result[0];
 }
 
+Service.getCategories = async (idService) => {
+  let categories = await con.query('SELECT c.idCategory, c.nome FROM tb_categories_services cs, tb_categories c WHERE c.idCategory = cs.idCategory AND cs.idService = ?', [idService]);
+  return categories = categories[0];
+}
+
 Service.addCategory = async (idService, idCategory) => {
   let result = await con.query('INSERT INTO tb_categories_services SET ?', { idService, idCategory })
+  return result;
+}
+
+Service.removeCategory = async (idService, idCategory) => {
+  let result = await con.query('DELETE FROM tb_categories_services WHERE idService = ? AND idCategory = ?', [idService, idCategory]);
   return result;
 }
 

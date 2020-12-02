@@ -69,4 +69,9 @@ Provider.addCategory = async (idProvider, idCategory) => {
   return result;
 }
 
+Provider.removeCategory = async (idProvider, idCategory) => {
+  let result = await con.query('DELETE FROM tb_categories_providers WHERE idProvider = ? AND idCategory = ?', [idProvider, idCategory]);
+  return result;
+}
+
 module.exports = Provider;

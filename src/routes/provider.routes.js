@@ -13,4 +13,8 @@ router.delete('/delete/:id', providerController.delete);
 
 router.post('/addCategory', providerController.addCategory);
 
+router.get('/:id/getCategories/', providerController.getCategories);
+
+router.delete('/:idProvider/removeCategory/:idCategory/', providerController.removeCategory);
+
 module.exports = router;

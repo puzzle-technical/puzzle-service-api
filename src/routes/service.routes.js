@@ -13,4 +13,8 @@ router.delete('/delete/:id', serviceController.delete);
 
 router.post('/addCategory', serviceController.addCategory);
 
+router.get('/:id/getCategories/', serviceController.getCategories);
+
+router.delete('/:idService/removeCategory/:idCategory/', serviceController.removeCategory);
+
 module.exports = router;

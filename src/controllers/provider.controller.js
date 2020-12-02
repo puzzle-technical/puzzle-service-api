@@ -55,3 +55,25 @@ exports.addCategory = (request, response) => {
     response.status(500).send('Erro ao adicionar categoria ao profissional\n\n' + err);
   })
 }
+
+exports.removeCategory = (request, response) => {
+  Provider.removeCategory(request.params.idProvider, request.params.idCategory)
+  .then(res => {
+    response.send(`Categoria removida ao profissional`)
+  })
+  .catch(err => {
+    console.log(err);
+    response.status(500).send('Erro ao remover categoria do profissional\n\n' + err);
+  })
+}
+
+exports.getCategories = (request, response) => {
+  Provider.getCategories(request.params.id)
+  .then(res => {
+    response.json(res);
+  })
+  .catch(err => {
+    console.log(err);
+    response.status(500).send(err);
+  })
+}
