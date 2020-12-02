@@ -3,11 +3,9 @@ const router = express.Router();
 
 const userController = require('../controllers/user.controller');
 
-router.get('/', userController.findAll);
+router.get('/', userController.find);
 
-router.get('/:id', userController.findByID);
-
-router.post('/add', userController.create);
+router.post('/create', userController.create);
 
 router.put('/update/:id', userController.update);
 

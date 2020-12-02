@@ -1,20 +1,8 @@
 'use strict';
-
 const Provider = require('../models/provider.model');
 
-exports.findAll = (request, response) => {
-  Provider.findAll()
-  .then(res => {
-    response.json(res);
-  })
-  .catch(err => {
-    console.log(err);
-    response.status(500).send(err);
-  })
-}
-
-exports.findByID = (request, response) => {
-  Provider.findByID(request.params.id)
+exports.find = (request, response) => {
+  Provider.find(request.query['idProvider'], request.query['idCategory'])
   .then(res => {
     response.json(res);
   })
@@ -54,5 +42,16 @@ exports.delete = (request, response) => {
   .catch(err => {
     console.log(err);
     response.status(500).send('Erro ao remover profissional\n\n' + err);
+  })
+}
+
+exports.addCategory = (request, response) => {
+  Provider.addCategory(request.body.idProvider, request.body.idCategory)
+  .then(res => {
+    response.send(`Categoria adicionada ao profissional`)
+  })
+  .catch(err => {
+    console.log(err);
+    response.status(500).send('Erro ao adicionar categoria ao profissional\n\n' + err);
   })
 }

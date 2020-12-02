@@ -1,20 +1,8 @@
 'use strict';
-
 const User = require('../models/user.model');
 
-exports.findAll = (request, response) => {
-  User.findAll()
-  .then(res => {
-    response.json(res);
-  })
-  .catch(err => {
-    console.log(err);
-    response.status(500).send(err);
-  })
-}
-
-exports.findByID = (request, response) => {
-  User.findByID(request.params.id)
+exports.find = (request, response) => {
+  User.find(request.query['idUser'])
   .then(res => {
     response.json(res);
   })

@@ -19,15 +19,17 @@ const User = function (user) {
   this.senha = user.senha
 }
 
-User.findAll = async() => {
-  const result = await con.query('SELECT * FROM tb_users');
-  return result[0];
-}
+User.find = async(idUser = undefined) => {
+  let result;
+  
+  if (idUser) {
+    result = await con.query('SELECT * FROM tb_users WHERE idUser = ?', [idUser]);
+    if (result[0].length < 1) return null;
+    return result[0][0];
+  }  
 
-User.findByID = async(id) => {
-  const result = await con.query('SELECT * FROM tb_users WHERE idUser = ?', [id]);
-  if (result[0].length < 1) return null;
-  return result[0][0];
+  result = await con.query('SELECT * FROM tb_users');
+  return result[0];
 }
 
 User.create = async (user) => {
