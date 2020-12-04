@@ -1,0 +1,23 @@
+Puzzle Technical
+
+Integrantes:
+Camila Rose Rodrigues da Silva
+Darnley de Souza Faneco
+Gabriel Lucas Francelino da Silva
+Gabriel Victor Gomes da Silva
+Marcelo Claudio Santos Monteiro
+Mauro Cesar Maciel
+Wellington Santos Diniz
+
+
+Instruções para teste:
+
+Primeiro rode o comando "npm install" para instalar as dependências do projeto.
+
+Para testar você tem que ligar o mysql usando o Xampp ou algo do tipo.
+
+Então use o conteúdo do arquivo "db_puzzleservices.sql" para rodar o script e criar um novo banco de dados chamado "db_puzzleservices".
+
+Para povoar o banco de dados com dados aleatórios, use o comando "npm populate-db". Talvez mostre alguns erros mas como são dados aleatórios as vezes tem alguns conflitos de dados.
+
+Depois use o comando "npm start" para iniciar o servidor e faça as queries para as rotas disponíveis no arquivo "README.md"
