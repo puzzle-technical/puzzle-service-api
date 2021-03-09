@@ -1,11 +1,13 @@
 const mysql = require('dotenv').config();
 const express = require('express');
+const cors = require('cors')
 const bodyParser = require('body-parser');
 const dbConn = require('./config/db.config');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
@@ -34,6 +36,9 @@ app.use('/api/categories', categoryRoutes);
 const budgetRoutes = require('./src/routes/budget.routes');
 app.use('/api/budgets', budgetRoutes);
 
+app.get('/', (req, res) => {
+  res.send('Puzzle Service API')
+})
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);

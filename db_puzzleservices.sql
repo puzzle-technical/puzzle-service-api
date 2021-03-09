@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_users` (
 CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_categories` (
   `idCategory` INT(9) NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(80) NOT NULL UNIQUE,
+  `image` VARCHAR(150),
   PRIMARY KEY (`idCategory`));
 
 
