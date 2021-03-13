@@ -17,4 +17,6 @@ router.get('/:id/getCategories/', providerController.getCategories);
 
 router.delete('/:idProvider/removeCategory/:idCategory/', providerController.removeCategory);
 
+router.post('/login', providerController.login);
+
 module.exports = router;

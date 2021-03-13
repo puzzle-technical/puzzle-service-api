@@ -1,4 +1,4 @@
-const mysql = require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors')
 const bodyParser = require('body-parser');
@@ -11,12 +11,11 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
-app.get('/api', (req, res) => {
-  dbConn.query("SHOW TABLES", function (err, result, fields) {
-    if (err) throw err;
-    res.send(result);
-  });
-});
+app.get('/api', async (req, res) => {
+  var result = await dbConn.query("SHOW TABLES")
+  .catch(err => console.log(err));
+  res.json(result[0])
+})
 
 
 // routers

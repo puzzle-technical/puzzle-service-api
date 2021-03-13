@@ -1,22 +1,26 @@
 'use strict';
 var con = require('../../config/db.config');
+var auth = require('../services/auth');
 
 const Provider = function (provider) {
-  this.idProvider = provider.idProvider,
-  this.cpfProvider = provider.cpfProvider,
-  this.nome = provider.nome,
-  this.email = provider.email,
-  this.celular = provider.celular,
-  this.dataNasc = provider.dataNasc,
-  this.logradouro = provider.logradouro,
-  this.numero = provider.numero,
-  this.complemento = provider.complemento,
-  this.bairro = provider.bairro,
-  this.cidade = provider.cidade,
-  this.uf = provider.uf,
-  this.cep = provider.cep,
-  this.avaliacao = provider.avaliacao,
-  this.senha = provider.senha
+  this.idProvider = provider.idProvider
+  this.cpfProvider = provider.cpfProvider
+  this.nome = provider.nome
+  this.email = provider.email
+  this.celular = provider.celular
+  this.dataNasc = provider.dataNasc
+  this.logradouro = provider.logradouro
+  this.numero = provider.numero
+  this.complemento = provider.complemento
+  this.bairro = provider.bairro
+  this.cidade = provider.cidade
+  this.uf = provider.uf
+  this.cep = provider.cep
+  this.avaliacao = provider.avaliacao
+
+  let { senha, salt } = auth.gerarSenha(provider.senha)
+  this.senha = senha
+  this.senhaSalt = salt
 }
 
 Provider.find = async(idProvider = undefined, idCategory = undefined) => {
@@ -72,6 +76,13 @@ Provider.addCategory = async (idProvider, idCategory) => {
 Provider.removeCategory = async (idProvider, idCategory) => {
   let result = await con.query('DELETE FROM tb_categories_providers WHERE idProvider = ? AND idCategory = ?', [idProvider, idCategory]);
   return result;
+}
+
+Provider.validateLogin = async (email, senha) => {
+  const result = await con.query('SELECT * FROM tb_providers WHERE email = ?', [email])
+  if (!result[0].length) return false
+  let provider = result[0][0]
+  return provider.senha == auth.combineSenhaSalt(senha, provider.senhaSalt).senha
 }
 
 module.exports = Provider;

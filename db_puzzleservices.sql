@@ -10,21 +10,29 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema db_puzzleservices
 -- -----------------------------------------------------
-
--- -----------------------------------------------------
--- Schema db_puzzleservices
--- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `db_puzzleservices` ;
 USE `db_puzzleservices` ;
+
+-- -----------------------------------------------------
+-- Table `db_puzzleservices`.`tb_admin`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_admin` (
+  `idAdmin` INT(9) NULL DEFAULT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(80) NOT NULL,
+  `email` VARCHAR(40) UNIQUE NOT NULL,
+  `senha` VARCHAR(150) NOT NULL,
+  `senhaSalt` VARCHAR(50) NOT NULL,
+  PRIMARY KEY (`idAdmin`));
+
 
 -- -----------------------------------------------------
 -- Table `db_puzzleservices`.`tb_users`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_users` (
   `idUser` INT(9) NULL DEFAULT NULL AUTO_INCREMENT,
-  `cpfUser` VARCHAR(14) NOT NULL,
+  `cpfUser` VARCHAR(14) UNIQUE NOT NULL,
   `nome` VARCHAR(80) NOT NULL,
-  `email` VARCHAR(40) NOT NULL,
+  `email` VARCHAR(40) UNIQUE NOT NULL,
   `celular` VARCHAR(14) NOT NULL,
   `dataNasc` DATE NOT NULL,
   `logradouro` VARCHAR(80) NOT NULL,
@@ -35,7 +43,8 @@ CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_users` (
   `uf` CHAR(2) NOT NULL,
   `cep` CHAR(9) NOT NULL,
   `avaliacao` FLOAT NULL DEFAULT NULL,
-  `senha` VARCHAR(50) NOT NULL,
+  `senha` VARCHAR(150) NOT NULL,
+  `senhaSalt` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`idUser`));
 
 
@@ -54,9 +63,9 @@ CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_categories` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_providers` (
   `idProvider` INT(9) NULL DEFAULT NULL AUTO_INCREMENT,
-  `cpfProvider` VARCHAR(14) NOT NULL,
+  `cpfProvider` VARCHAR(14) UNIQUE NOT NULL,
   `nome` VARCHAR(80) NOT NULL,
-  `email` VARCHAR(40) NOT NULL,
+  `email` VARCHAR(40) UNIQUE NOT NULL,
   `celular` VARCHAR(14) NOT NULL,
   `dataNasc` DATE NOT NULL,
   `logradouro` VARCHAR(80) NOT NULL,
@@ -67,7 +76,8 @@ CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_providers` (
   `uf` CHAR(2) NOT NULL,
   `cep` CHAR(9) NOT NULL,
   `avaliacao` FLOAT NULL DEFAULT NULL,
-  `senha` VARCHAR(50) NOT NULL,
+  `senha` VARCHAR(150) NOT NULL,
+  `senhaSalt` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`idProvider`));
 
 

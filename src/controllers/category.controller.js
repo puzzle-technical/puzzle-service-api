@@ -1,46 +1,51 @@
 'use strict';
 const Category = require('../models/category.model');
+const Response = require('../utills/response')
 
 exports.find = (request, response) => {
   Category.find(request.query['idCategory'])
   .then(res => {
-    response.json(res);
+    if (res == null) {
+      response.json(new Response(false, 'Nenhuma categoria com este id não encontrado', res));
+      return
+    }
+    response.json(new Response(true, 'Categoria(s) encontrado(s) com sucesso', res));
   })
   .catch(err => {
-    console.log(err);
-    response.status(500).send(err);
+    console.log(err)
+    response.json(new Response(false));
   })
 }
 
 exports.create = (request, response) => {
   Category.create(request.body)
   .then(res => {
-    response.send(`Categoria adicionada com id ${res.insertId}`);
+    response.json(new Response(true, 'Categoria criada com sucesso', res));
   })
   .catch(err => {
-    console.log(err);
-    response.status(500).send('Erro ao adicionar categoria\n\n' + err);
+    console.log(err)
+    response.json(new Response(false));
   })
 }
 
 exports.update = (request, response) => {
   Category.update(request.params.id, request.body)
   .then(res => {
-    response.send(`Categoria ${request.params.id} atualizado com sucesso`);
+    response.json(new Response(true, 'Categoria atualizada com sucesso', res));
   })
   .catch(err => {
-    console.log(err);
-    response.status(500).send('Erro ao atualizar categoria\n\n' + err);
+    console.log(err)
+    response.json(new Response(false));
   })
 }
 
 exports.delete = (request, response) => {
   Category.delete(request.params.id)
   .then(res => {
-    response.send(`Categoria ${request.params.id} removido com sucesso`)
+    response.json(new Response(true, 'Categoria removido com sucesso', res));
   })
   .catch(err => {
-    console.log(err);
-    response.status(500).send('Erro ao remover categoria\n\n' + err);
+    console.log(err)
+    response.json(new Response(false));
   })
 }

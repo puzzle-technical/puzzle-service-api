@@ -1,22 +1,26 @@
 'use strict';
 var con = require('../../config/db.config');
+var auth = require('../services/auth');
 
 const User = function (user) {
-  this.idUser = user.idUser,
-  this.cpfUser = user.cpfUser,
-  this.nome = user.nome,
-  this.email = user.email,
-  this.celular = user.celular,
-  this.dataNasc = user.dataNasc,
-  this.logradouro = user.logradouro,
-  this.numero = user.numero,
-  this.complemento = user.complemento,
-  this.bairro = user.bairro,
-  this.cidade = user.cidade,
-  this.uf = user.uf,
-  this.cep = user.cep,
-  this.avaliacao = user.avaliacao,
-  this.senha = user.senha
+  this.idUser = user.idUser
+  this.cpfUser = user.cpfUser
+  this.nome = user.nome
+  this.email = user.email
+  this.celular = user.celular
+  this.dataNasc = user.dataNasc
+  this.logradouro = user.logradouro
+  this.numero = user.numero
+  this.complemento = user.complemento
+  this.bairro = user.bairro
+  this.cidade = user.cidade
+  this.uf = user.uf
+  this.cep = user.cep
+  this.avaliacao = user.avaliacao
+  
+  let { senha, salt } = auth.gerarSenha(user.senha)
+  this.senha = senha
+  this.senhaSalt = salt
 }
 
 User.find = async(idUser = undefined) => {
@@ -47,6 +51,13 @@ User.update = async (id, user) => {
 User.delete = async (id) => {
   const result = await con.query('DELETE FROM tb_users WHERE idUser = ?', [id]);
   return result[0];
+}
+
+User.validateLogin = async (email, senha) => {
+  const result = await con.query('SELECT * FROM tb_users WHERE email = ?', [email])
+  if (!result[0].length) return false
+  let user = result[0][0]
+  return user.senha == auth.combineSenhaSalt(senha, user.senhaSalt).senha
 }
 
 module.exports = User;

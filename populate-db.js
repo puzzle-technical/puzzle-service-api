@@ -83,7 +83,7 @@ for (let i = 0; i < categories.length; i++) {
   .then().catch(err => { console.log(err) })
 }
 
-// users 
+// providers 
 for (let i = 0; i < 15; i++) {
   let name = generateName();
   let user = {
@@ -100,14 +100,14 @@ for (let i = 0; i < 15; i++) {
     uf: "PE",
     cep: generateCep(),
     avaliacao: Math.random() * 5,
-    senha: "qLGGKbcp9A"
+    senha: "senha"
   }
 
   Provider.create(user)
   .then().catch(err => { console.log(err) })
 }
 
-
+// users
 for (let i = 0; i < 15; i++) {
   let name = generateName();
   let user = {
@@ -124,7 +124,7 @@ for (let i = 0; i < 15; i++) {
     uf: "PE",
     cep: generateCep(),
     avaliacao: Math.random() * 5,
-    senha: "qLGGKbcp9A"
+    senha: "senha"
   }
 
   User.create(user)

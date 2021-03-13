@@ -1,46 +1,62 @@
 'use strict';
 const User = require('../models/user.model');
+const Response = require('../utills/response')
 
 exports.find = (request, response) => {
   User.find(request.query['idUser'])
   .then(res => {
-    response.json(res);
+    if (res == null) {
+      response.json(new Response(false, 'Nenhum usuário com este id não encontrado', res));
+      return
+    }
+    response.json(new Response(true, 'Usuário(s) encontrado(s) com sucesso', res));
   })
   .catch(err => {
-    console.log(err);
-    response.status(500).send(err);
+    console.log(err)
+    response.json(new Response(false));
   })
 }
 
 exports.create = (request, response) => {
   User.create(request.body)
   .then(res => {
-    response.send(`Usuario adicionado com id ${res.insertId}`);
+    response.json(new Response(true, 'Usuário criado com sucesso', res));
   })
   .catch(err => {
-    console.log(err);
-    response.status(500).send('Erro ao adicionar usuário\n\n' + err);
+    console.log(err)
+    response.json(new Response(false));
   })
 }
 
 exports.update = (request, response) => {
   User.update(request.params.id, request.body)
   .then(res => {
-    response.send(`Usuario ${request.params.id} atualizado com sucesso`);
+    response.json(new Response(true, 'Usuário atualizado com sucesso', res));
   })
   .catch(err => {
-    console.log(err);
-    response.status(500).send('Erro ao atualizar usuário\n\n' + err);
+    console.log(err)
+    response.json(new Response(false));
   })
 }
 
 exports.delete = (request, response) => {
   User.delete(request.params.id)
   .then(res => {
-    response.send(`Usuario ${request.params.id} removido com sucesso`)
+    response.json(new Response(true, 'Usuário removido com sucesso', res));
   })
   .catch(err => {
-    console.log(err);
-    response.status(500).send('Erro ao remover usuário\n\n' + err);
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
+exports.login = (request, response) => {
+  User.validateLogin(request.body.email, request.body.senha)
+  .then(res => {
+    response.json(new Response(res, !res ? 'Email e/ou senha incorretos.' : 'Login válido', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
   })
 }

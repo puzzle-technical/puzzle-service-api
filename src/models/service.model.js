@@ -19,16 +19,10 @@ Service.find = async (idService = undefined) => {
     return result[0][0];
   }  
 
-  // find by category
-  else if (idCategory) {
-    providers = await con.query('SELECT s.* FROM tb_services s, tb_categories_services cs WHERE s.idProvider = cs.idProvider AND cs.idCategory = ?', idCategory);
-    return providers[0];
-  }
-  
   //find all
   else {
-    providers = await con.query('SELECT * FROM tb_services');
-    return providers[0];
+    result = await con.query('SELECT * FROM tb_services');
+    return result[0];
   }
 }
 
