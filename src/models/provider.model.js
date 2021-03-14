@@ -6,7 +6,7 @@ const Provider = function (provider) {
   this.idProvider = provider.idProvider
   this.cpfProvider = provider.cpfProvider
   this.nome = provider.nome
-  this.email = provider.email
+  this.email = provider.email.toLowerCase()
   this.celular = provider.celular
   this.dataNasc = provider.dataNasc
   this.logradouro = provider.logradouro
@@ -79,7 +79,7 @@ Provider.removeCategory = async (idProvider, idCategory) => {
 }
 
 Provider.validateLogin = async (email, senha) => {
-  const result = await con.query('SELECT * FROM tb_providers WHERE email = ?', [email])
+  const result = await con.query('SELECT * FROM tb_providers WHERE email = ?', [email.toLowerCase()])
   if (!result[0].length) return false
   let provider = result[0][0]
   return provider.senha == auth.combineSenhaSalt(senha, provider.senhaSalt).senha

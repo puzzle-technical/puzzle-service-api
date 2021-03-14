@@ -24,6 +24,12 @@ exports.create = (request, response) => {
   })
   .catch(err => {
     console.log(err)
+    if (err.code == 'ER_DUP_ENTRY') {
+      let feedback = err.sqlMessage.indexOf("key 'email'") != -1 ? 'Email já cadastrado.' :
+        err.sqlMessage.indexOf("key 'cpfUser'") != -1 ? 'CPF já cadastrado.' :
+      response.json(new Response(false, feedback))
+      return
+    }
     response.json(new Response(false));
   })
 }
@@ -54,6 +60,17 @@ exports.login = (request, response) => {
   User.validateLogin(request.body.email, request.body.senha)
   .then(res => {
     response.json(new Response(res, !res ? 'Email e/ou senha incorretos.' : 'Login válido', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
+exports.uploadPicture = (request, response) => {
+  User.uploadPicture(request.params.id, request.files.file)
+  .then(res => {
+    response.json(new Response(true, 'Foto atualizada com sucesso.', res))
   })
   .catch(err => {
     console.log(err)

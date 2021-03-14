@@ -6,7 +6,7 @@ const User = function (user) {
   this.idUser = user.idUser
   this.cpfUser = user.cpfUser
   this.nome = user.nome
-  this.email = user.email
+  this.email = user.email.toLowerCase()
   this.celular = user.celular
   this.dataNasc = user.dataNasc
   this.logradouro = user.logradouro
@@ -54,10 +54,18 @@ User.delete = async (id) => {
 }
 
 User.validateLogin = async (email, senha) => {
-  const result = await con.query('SELECT * FROM tb_users WHERE email = ?', [email])
+  const result = await con.query('SELECT * FROM tb_users WHERE email = ?', [email.toLowerCase()])
   if (!result[0].length) return false
   let user = result[0][0]
   return user.senha == auth.combineSenhaSalt(senha, user.senhaSalt).senha
+}
+
+User.uploadPicture = async (id, file) => {
+  let uploadPath = `uploads/images/users/user_${id}.${file.name.split('.')[1]}`;
+  await file.mv(uploadPath, function(err) {
+    if (err) throw err
+  })
+  return true
 }
 
 module.exports = User;
