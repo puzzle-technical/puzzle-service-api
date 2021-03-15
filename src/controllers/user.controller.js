@@ -26,11 +26,11 @@ exports.create = (request, response) => {
     console.log(err)
     if (err.code == 'ER_DUP_ENTRY') {
       let feedback = err.sqlMessage.indexOf("key 'email'") != -1 ? 'Email já cadastrado.' :
-        err.sqlMessage.indexOf("key 'cpfUser'") != -1 ? 'CPF já cadastrado.' :
+        err.sqlMessage.indexOf("key 'cpfUser'") != -1 ? 'CPF já cadastrado.' : ''
       response.json(new Response(false, feedback))
       return
     }
-    response.json(new Response(false));
+    response.json(new Response(false, '', err));
   })
 }
 
