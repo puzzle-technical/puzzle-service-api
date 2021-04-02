@@ -49,3 +49,34 @@ exports.delete = (request, response) => {
     response.json(new Response(false));
   })
 }
+
+
+exports.findSubcategory = (request, response) => {
+  Category.findSubcategory(request.query['idSubcategory'])
+  .then(res => {
+    if (res == null) {
+      response.json(new Response(false, 'Nenhuma categoria com este id não encontrado', res));
+      return
+    }
+    response.json(new Response(true, 'Categoria(s) encontrado(s) com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
+exports.getSubcategoriesGroups = (request, response) => {
+  Category.getSubcategoriesGroups()
+  .then(res => {
+    if (res == null) {
+      response.json(new Response(false, 'Nenhuma categoria com este id não encontrado', res));
+      return
+    }
+    response.json(new Response(true, 'Categoria(s) encontrado(s) com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}

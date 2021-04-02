@@ -39,7 +39,9 @@ User (Cliente)
   Param       | Tipo                | Required     | Descrição
   ----------- | :-----------------: | :----------: | ---------------------
   idUser      | int                 | (automático) | id do usuário
-  cpfUser     | int                 | true         | cpf do usuário
+  cpf         | int                 | true         | cpf do usuário
+  tipoUser [1]| ENUM                | false        | tipo do usuario
+  status   [2]| ENUM                | false        | status do usuario
   nome        | string              | true         | nome do usuário
   email       | string              | true         | email do usuário
   celular     | string              | true         | celular do usuário
@@ -54,6 +56,11 @@ User (Cliente)
   avaliacao   | float               | false        | avaliação do usuário
   senha       | string              | true         | senha do usuário
 
+[1] tipoUser: ('client', 'provider') 
+      default value: 'client'
+[2] status: ('pendente', 'ativo', 'suspenso', 'inativo')
+      default value: 'pendente'
+
 * **Find all**
 
   * Rota: /api/users <br>
@@ -62,10 +69,10 @@ User (Cliente)
 
 * **Find by id**
 
-  * Rota: /api/users?idUser= <br>
+  * Rota: /api/users/:idUser <br>
   * Método: GET <br>
   * Retorno: Usuário com este id <br>
-  * Parâmetros da query: <br>
+  * Parâmetros da rota: <br>
     * idUser - Id do usuário em questão
 
 * **Create**
@@ -95,74 +102,14 @@ User (Cliente)
     * idUser - Id do usuário em questão
   
 
-Provider (Prestador)
-----
+* **Find by subcategory**
 
-  Param           | Tipo                | Required     | Descrição
-  --------------- | :-----------------: | :----------: | ---------------------
-  idProvider      | int                 | (automático) | id do prestador
-  cpfProvider     | int                 | true         | cpf do prestador
-  nome            | string              | true         | nome do prestador
-  email           | string              | true         | email do prestador
-  celular         | string              | true         | celular do prestador
-  dataNasc        | string 'yyyy-mm-dd' | true         | data de nascimento do prestador
-  logradouro      | string              | true         | logradouro do prestador
-  numero          | string              | true         | numero do prestador
-  complemento     | string              | false        | complemento do prestador
-  bairro          | string              | true         | bairro do prestador
-  cidade          | string              | true         | cidade do prestador
-  uf              | string              | true         | uf do prestador
-  cep             | string              | true         | cep do prestador
-  avaliacao       | float               | false        | avaliação do prestador
-  senha           | string              | true         | senha do prestador
-
-* **Find all**
-
-  * Rota: /api/providers <br>
-  * Método: GET <br>
-  * Retorno: Lista de todos os prestadores
-
-* **Find by id**
-
-  * Rota: /api/providers?idProvider= <br>
-  * Método: GET <br>
-  * Retorno: Prestador com este id <br>
-  * Parâmetros da query: <br>
-    * idProvider - Id do prestador em questão
-
-* **Find by category**
-
-  * Rota: /api/providers?idCategory= <br>
+  * Rota: /api/users/bySubcategory/:idSubcategory <br>
   * Método: GET <br>
   * Retorno: Lista de prestadores com esta categoria <br>
-  * Parâmetros da query: <br>
-    * idCategory - Id da categoria em questão
-
-* **Create**
-
-  * Rota: /api/providers/create <br>
-  * Método: POST <br>
-  * Retorno: Mensagem de sucesso ou erro <br>
-  * Parâmetros da requisição: 
-    * Provider - Objeto com os campos necessários para criar o prestador 
-  
-* **Update**
-
-  * Rota: /api/providers/update/:idProvider <br>
-  * Método: PUT <br>
-  * Retorno: Mensagem de sucesso ou erro <br>
-  * Parâmetros da rota: 
-    * idProvider - Id do prestador em questão
-  * Parâmetros da requisição:  
-    * Provider - Objeto com os campos que deseja alterar
-
-* **Delete**
-
-  * Rota: /api/providers/delete/:idProvider <br>
-  * Método: DELETE <br>
-  * Retorno: Mensagem de sucesso ou erro <br>
-  * Parâmetros da rota: 
-    * idProvider - Id do prestador em questão
+  * Parâmetros da rota: <br>
+    * idSubcategory - Id da categoria em questão
+    
 
 * **Add a Category**
 

@@ -6,7 +6,7 @@ const Budget = function(service) {
   this.descricao = service.descricao;
   this.dataFinal = service.dataFinal;
   this.idService = service.idService;
-  this.idProvider = service.idProvider;
+  this.idUser = service.idUser;
 }
 
 Budget.find = async (idBudget = undefined) => {

@@ -25,9 +25,6 @@ app.get('/api', async (req, res) => {
 const userRoutes = require('./src/routes/user.routes');
 app.use('/api/users', userRoutes);
 
-const providerRoutes = require('./src/routes/provider.routes');
-app.use('/api/providers', providerRoutes);
-
 const serviceRoutes = require('./src/routes/service.routes');
 app.use('/api/services', serviceRoutes);
 

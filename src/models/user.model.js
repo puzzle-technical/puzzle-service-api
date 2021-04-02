@@ -1,10 +1,11 @@
-'use strict';
-var con = require('../../config/db.config');
-var auth = require('../services/auth');
+const con = require('../../config/db.config');
+const auth = require('../services/auth');
 
 const User = function (user) {
   this.idUser = user.idUser
-  this.cpfUser = user.cpfUser
+  this.tipoUser = user.tipoUser
+  this.status = user.status
+  this.cpf = user.cpf
   this.nome = user.nome
   this.email = user.email.toLowerCase()
   this.celular = user.celular
@@ -17,23 +18,36 @@ const User = function (user) {
   this.uf = user.uf
   this.cep = user.cep
   this.avaliacao = user.avaliacao
-  
+
   let { senha, salt } = auth.gerarSenha(user.senha)
   this.senha = senha
   this.senhaSalt = salt
 }
 
-User.find = async(idUser = undefined) => {
-  let result;
-  
-  if (idUser) {
-    result = await con.query('SELECT * FROM tb_users WHERE idUser = ?', [idUser]);
-    if (result[0].length < 1) return null;
-    return result[0][0];
-  }  
+User.findByID = async (idUser) => {
+  let user = await con.query('SELECT * FROM tb_users WHERE idUser = ?', [idUser]);
+  if (!user || user[0].length < 1) return null;
+  return user[0][0];
+}
 
-  result = await con.query('SELECT * FROM tb_users');
-  return result[0];
+User.findProvidersByCategories = async (categoriesIds) => {
+  users = await con.query(`SELECT DISTINCT u.* FROM tb_users u, tb_subcategories s, tb_users_subcategories uc WHERE u.idUser = uc.idUser AND uc.idSubcategory = s.idSubcategory AND s.idCategory IN (${con.escape(categoriesIds)})`);
+  return users[0];
+}
+
+User.findByCategory = async (idCategory) => {
+  users = await con.query('SELECT DISTINCT u.* FROM tb_users u, tb_subcategories s, tb_users_subcategories uc WHERE u.idUser = uc.idUser AND uc.idSubcategory = s.idSubcategory AND s.idCategory = ?', idCategory);
+  return users[0];
+}
+
+User.findBySubcategory = async (idSubcategory) => {
+  users = await con.query('SELECT DISTINCT u.* FROM tb_users u, tb_subcategories s, tb_users_subcategories uc WHERE u.idUser = uc.idUser AND uc.idSubcategory = s.idSubcategory AND s.idSubcategory = ?', idSubcategory);
+  return users[0];
+}
+
+User.findByType = async (tipoUser = 1) => {
+  let user = await con.query('SELECT * FROM tb_users WHERE status = 2 AND tipoUser = ?', [tipoUser]);
+  return user[0];
 }
 
 User.create = async (user) => {
@@ -53,19 +67,44 @@ User.delete = async (id) => {
   return result[0];
 }
 
-User.validateLogin = async (email, senha) => {
+User.getCategories = async (idUser) => {
+  let categories = await con.query('SELECT DISTINCT c.* FROM tb_categories c, tb_subcategories S, tb_users_subcategories us WHERE c.idCategory = s.idCategory AND s.idSubcategory = us.idSubcategory AND us.idUser = ?', [idUser]);
+  return categories[0];
+}
+
+User.getSubcategories = async (idUser) => {
+  let subcategories = await con.query('SELECT DISTINCT s.* FROM tb_subcategories S, tb_users_subcategories us WHERE s.idSubcategory = us.idSubcategory AND us.idUser = ?', [idUser]);
+  return subcategories[0];
+}
+
+User.addSubcategory = async (idUser, idSubcategory) => {
+  let result = await con.query('INSERT INTO tb_users_subcategories SET ?', { idUser, idSubcategory })
+  return result;
+}
+
+User.removeSubcategory = async (idUser, idSubcategory) => {
+  let result = await con.query('DELETE FROM tb_users_subcategories WHERE idUser = ? AND idSubcategory = ?', [idUser, idSubcategory]);
+  return result;
+}
+
+User.login = async (email, senha) => {
   const result = await con.query('SELECT * FROM tb_users WHERE email = ?', [email.toLowerCase()])
   if (!result[0].length) return false
   let user = result[0][0]
-  return user.senha == auth.combineSenhaSalt(senha, user.senhaSalt).senha
+  let validPassword = user.senha == auth.combineSenhaSalt(senha, user.senhaSalt).senha
+  let validStatus = user.status.toLowerCase() == 'ativo'
+  return validPassword && validStatus ? { user, token: auth.generateToken(user.idUser) } : false
 }
 
-User.uploadPicture = async (id, file) => {
-  let uploadPath = `uploads/images/users/user_${id}.${file.name.split('.')[1]}`;
-  await file.mv(uploadPath, function(err) {
-    if (err) throw err
-  })
-  return true
+User.getLocations = async (idUser) => {
+  const result = await con.query('SELECT * FROM `tb_users_locations` WHERE `idUser` = ?', [idUser])
+  console.log(result)
+  return result[0]
 }
 
+User.addLocation = async (idUser, { idLocation, nome }) => {
+  let newLocation = { idUser, idLocation, nome }
+  let result = await con.query('INSERT INTO tb_users_locations SET ?', newLocation)
+  return result;
+}
 module.exports = User;

@@ -1,6 +1,6 @@
 const mysql = require('dotenv').config();
+const auth = require('./src/services/auth')
 
-var Provider = require('./src/models/provider.model');
 var User = require('./src/models/user.model');
 var Service = require('./src/models/service.model');
 var Category = require('./src/models/category.model');
@@ -14,6 +14,14 @@ let cities = ['Olinda', 'Recife', 'Paulista', 'Igarassu', 'Afogados da Ingazeira
 
 let bairros = ['Boa Viagem', 'Casa Amarela', 'Jardim Paulista', 'Mirueira', 'Janga', 'Pau Amarelo', 'Boa Vista', 'Ouro Preto', 'Rio Doce', 'Paratibe', 'Arthur Lundgren', 'Centro', 'Nobre']
 
+let categories = {
+  'Construção': ['Construção de casas', 'Construção de telhados', 'Construção de muros', 'Construção de piscinas'],
+  'Hidráulica': ['Instalações hidráulicas', 'Manutenção de encanamento', 'Manutenção de piscinas', "Manutenção de bomba d'água"],
+  'Reformas': ['Reformas de banheiros', 'Reformas de cozinhas', 'Reformas de escritórios', 'Reformas de imóveis'],
+  'Elétrica': ['Instalações elétricas', 'Troca de disjuntores', 'Fiações elétricas', 'Iluminações', 'Quadros e painéis elétricos', 'Instalação de força elétrica']
+}
+
+  
 let generateName = () => {
   let value = ''
   value += names[rand(names.length - 1)];
@@ -77,41 +85,34 @@ let rand = (n) => {
 }
 
 
-let categories = ['Construção de casas', 'Construção de telhados', 'Construção de muros', 'Construção de piscinas', 'Fornecer materiais de construção', 'Instalações elétricas', 'Instalações hidráulicas', 'Reformas de banheiros', 'Reformas de cozinhas', 'Reformas de escritórios', 'Reformas de imóveis', 'Restauração de fachadas']
-for (let i = 0; i < categories.length; i++) {
-  Category.create({ nome: categories[i] })
-  .then().catch(err => { console.log(err) })
-}
+// ---------------------- CREATION ----------------------- //
 
-// providers 
-for (let i = 0; i < 15; i++) {
-  let name = generateName();
-  let user = {
-    cpfProvider: generateCpf(),
-    nome: name,
-    email: generateEmail(name),
-    celular: generatePhone(),
-    dataNasc: generateBirthDate(),
-    logradouro: generateRua(),
-    numero: (rand(300) + 50),
-    complemento: "",
-    bairro: generateBairro(),
-    cidade: generateCity(),
-    uf: "PE",
-    cep: generateCep(),
-    avaliacao: Math.random() * 5,
-    senha: "senha"
-  }
 
-  Provider.create(user)
-  .then().catch(err => { console.log(err) })
-}
+// categories 
+
+Object.keys(categories).forEach(async cat => {
+  console.log("INSERINDO CATEGORIA: ", cat);
+  await Category.create({ nome: cat })
+  .then(res => {
+    let id = res.insertId
+    console.log("INSERINDO SUBCATEGORIA: ", cat, ", EM: ", id);
+    categories[cat].forEach(async subcat => {
+      await Category.createSubcategory({ idCategory: id, nome: subcat })
+    })
+  })
+  .catch(err => { console.log(err) })
+})
 
 // users
-for (let i = 0; i < 15; i++) {
+
+for (let i = 0; i < 30; i++) {
   let name = generateName();
+  let { senha, salt } = auth.gerarSenha("senha123")
+
   let user = {
-    cpfUser: generateCpf(),
+    tipoUser: i < 15 ? 1 : 2,
+    status: 2,
+    cpf: generateCpf(),
     nome: name,
     email: generateEmail(name),
     celular: generatePhone(),
@@ -124,52 +125,60 @@ for (let i = 0; i < 15; i++) {
     uf: "PE",
     cep: generateCep(),
     avaliacao: Math.random() * 5,
-    senha: "senha"
+    senha: senha,
+    senhaSalt: salt
   }
 
   User.create(user)
-  .then().catch(err => { console.log(err) })
+  .then(async res => {
+    let id = res.insertId
+
+    for (let i = 0; i < rand(4); i++) {
+      await User.addSubcategory(id, rand(17) + 1)
+    }    
+  })
+  .catch(err => { console.log(err) })
 }
 
 
-for (let i = 0; i < 15; i++) {
-  for (let j = 0; j < rand(3)+1; j++) {
-    Provider.addCategory(i+1, rand(categories.length-1)+1)
-    .then().catch(err => { console.log(err) })
-  }
-}
+// for (let i = 0; i < 15; i++) {
+//   for (let j = 0; j < rand(3)+1; j++) {
+//     Provider.addCategory(i+1, rand(categories.length-1)+1)
+//     .then().catch(err => { console.log(err) })
+//   }
+// }
 
-for (let i = 0; i < 15; i++) {
-  for (let j = 0; j < rand(2)+1; j++) {
-    let service = {
-      idUser: i,
-      nome: `Serviço ${i}: fazer alguma coisa ${yesNo() ? '' : 'e mais outra coisa'}`,
-      descricao: "Lorem ipsum dolor sic mundus creatus est. Imagine que este é um texto bastante longo.",
-      localizacao: "Rua Trinta, n 206 - Jardim Paulista - Paulista - PE",
-      dataPublic: "2020-12-01 01:54"
-    }
-    Service.create(service)
-    .then().catch(err => { console.log(err) })
-  }
-}
+// for (let i = 0; i < 15; i++) {
+//   for (let j = 0; j < rand(2)+1; j++) {
+//     let service = {
+//       idUser: i,
+//       nome: `Serviço ${i}: fazer alguma coisa ${yesNo() ? '' : 'e mais outra coisa'}`,
+//       descricao: "Lorem ipsum dolor sic mundus creatus est. Imagine que este é um texto bastante longo.",
+//       localizacao: "Rua Trinta, n 206 - Jardim Paulista - Paulista - PE",
+//       dataPublic: "2020-12-01 01:54"
+//     }
+//     Service.create(service)
+//     .then().catch(err => { console.log(err) })
+//   }
+// }
 
 
-for (let i = 0; i < 15; i++) {
-  for (let j = 0; j < rand(3)+1; j++) {
-    let budget = {
-      idProvider: rand(10),
-      idService: i,
-      descricao: "Lorem ipsum dolor sic mundus creatus est. Imagine que este é um texto bastante longo.",
-      dataFinal: "2020-12-10 12:54"
-    }
-    Budget.create(budget)
-    .then().catch(err => { console.log(err) })
-  }
-}
+// for (let i = 0; i < 15; i++) {
+//   for (let j = 0; j < rand(3)+1; j++) {
+//     let budget = {
+//       idProvider: rand(10),
+//       idService: i,
+//       descricao: "Lorem ipsum dolor sic mundus creatus est. Imagine que este é um texto bastante longo.",
+//       dataFinal: "2020-12-10 12:54"
+//     }
+//     Budget.create(budget)
+//     .then().catch(err => { console.log(err) })
+//   }
+// }
 
-for (let i = 0; i < 15; i++) {
-  for (let j = 0; j < rand(3); j++) {
-    Service.addCategory(rand(10), rand(10))
-    .then().catch(err => { console.log(err) })
-  }
-}
+// for (let i = 0; i < 15; i++) {
+//   for (let j = 0; j < rand(3); j++) {
+//     Service.addCategory(rand(10), rand(10))
+//     .then().catch(err => { console.log(err) })
+//   }
+// }

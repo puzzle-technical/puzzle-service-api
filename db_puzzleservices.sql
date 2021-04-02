@@ -30,10 +30,12 @@ CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_admin` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_users` (
   `idUser` INT(9) NULL DEFAULT NULL AUTO_INCREMENT,
-  `cpfUser` VARCHAR(14) UNIQUE NOT NULL,
+  `tipoUser` ENUM('client', 'provider') NOT NULL DEFAULT 'client',
+  `status` ENUM('pendente', 'ativo', 'suspenso', 'inativo') NOT NULL DEFAULT 'pendente', 
+  `cpf` VARCHAR(14) UNIQUE NOT NULL,
   `nome` VARCHAR(80) NOT NULL,
   `email` VARCHAR(40) UNIQUE NOT NULL,
-  `celular` VARCHAR(14) NOT NULL,
+  `celular` VARCHAR(16) NOT NULL,
   `dataNasc` DATE NOT NULL,
   `logradouro` VARCHAR(80) NOT NULL,
   `numero` CHAR(5) NOT NULL,
@@ -45,8 +47,8 @@ CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_users` (
   `avaliacao` FLOAT NULL DEFAULT NULL,
   `senha` VARCHAR(150) NOT NULL,
   `senhaSalt` VARCHAR(50) NOT NULL,
+  `avatar` VARCHAR(100),
   PRIMARY KEY (`idUser`));
-
 
 -- -----------------------------------------------------
 -- Table `db_puzzleservices`.`tb_categories`
@@ -57,47 +59,40 @@ CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_categories` (
   `image` VARCHAR(150),
   PRIMARY KEY (`idCategory`));
 
-
+  
 -- -----------------------------------------------------
--- Table `db_puzzleservices`.`tb_providers`
+-- Table `db_puzzleservices`.`tb_subcategories`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_providers` (
-  `idProvider` INT(9) NULL DEFAULT NULL AUTO_INCREMENT,
-  `cpfProvider` VARCHAR(14) UNIQUE NOT NULL,
-  `nome` VARCHAR(80) NOT NULL,
-  `email` VARCHAR(40) UNIQUE NOT NULL,
-  `celular` VARCHAR(14) NOT NULL,
-  `dataNasc` DATE NOT NULL,
-  `logradouro` VARCHAR(80) NOT NULL,
-  `numero` CHAR(5) NOT NULL,
-  `complemento` VARCHAR(30) NULL DEFAULT NULL,
-  `bairro` VARCHAR(50) NOT NULL,
-  `cidade` VARCHAR(40) NOT NULL,
-  `uf` CHAR(2) NOT NULL,
-  `cep` CHAR(9) NOT NULL,
-  `avaliacao` FLOAT NULL DEFAULT NULL,
-  `senha` VARCHAR(150) NOT NULL,
-  `senhaSalt` VARCHAR(50) NOT NULL,
-  PRIMARY KEY (`idProvider`));
-
-
--- -----------------------------------------------------
--- Table `db_puzzleservices`.`tb_categories_providers`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_categories_providers` (
+CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_subcategories` (
+  `idSubcategory` INT(9) NOT NULL AUTO_INCREMENT,
   `idCategory` INT(9) NOT NULL,
-  `idProvider` INT(9) NOT NULL,
-  PRIMARY KEY (`idCategory`, `idProvider`),
-  INDEX `fk_categories_providers_idCategory` (`idCategory` ASC),
-  INDEX `fk_categories_providers_idProvider` (`idProvider` ASC),
-  CONSTRAINT `fk_categories_providers_idCategory`
+  `nome` VARCHAR(80) NOT NULL UNIQUE,
+  PRIMARY KEY (`idSubcategory`),
+  INDEX `fk_subcategories_idCategory` (`idCategory` ASC),
+  CONSTRAINT `fk_subcategories_idCategory`
     FOREIGN KEY (`idCategory`)
     REFERENCES `db_puzzleservices`.`tb_categories` (`idCategory`)
     ON DELETE CASCADE
+    ON UPDATE NO ACTION);
+
+
+-- -----------------------------------------------------
+-- Table `db_puzzleservices`.`tb_users_subcategories`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_users_subcategories` (
+  `idSubcategory` INT(9) NOT NULL,
+  `idUser` INT(9) NOT NULL,
+  PRIMARY KEY (`idSubcategory`, `idUser`),
+  INDEX `fk_users_categories_idSubcategory` (`idSubcategory` ASC),
+  INDEX `fk_categories_providers_idUser` (`idUser` ASC),
+  CONSTRAINT `fk_users_categories_idSubcategory`
+    FOREIGN KEY (`idSubcategory`)
+    REFERENCES `db_puzzleservices`.`tb_subcategories` (`idSubcategory`)
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_categories_providers_idProvider`
-    FOREIGN KEY (`idProvider`)
-    REFERENCES `db_puzzleservices`.`tb_providers` (`idProvider`)
+  CONSTRAINT `fk_categories_providers_idUser`
+    FOREIGN KEY (`idUser`)
+    REFERENCES `db_puzzleservices`.`tb_users` (`idUser`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION);
 
@@ -129,18 +124,18 @@ CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_budgets` (
   `descricao` VARCHAR(120) NOT NULL,
   `dataFinal` DATE NULL DEFAULT NULL,
   `idService` INT(9) NOT NULL,
-  `idProvider` INT(9) NOT NULL,
+  `idUser` INT(9) NOT NULL,
   PRIMARY KEY (`idBudget`),
-  INDEX `fk_idService` (`idService` ASC),
-  INDEX `fk_idProvider` (`idProvider` ASC),
-  CONSTRAINT `fk_idService`
+  INDEX `fk_budgets_idService` (`idService` ASC),
+  INDEX `fk_budgets_idUser` (`idUser` ASC),
+  CONSTRAINT `fk_budgets_idService`
     FOREIGN KEY (`idService`)
     REFERENCES `db_puzzleservices`.`tb_services` (`idService`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_idProvider`
-    FOREIGN KEY (`idProvider`)
-    REFERENCES `db_puzzleservices`.`tb_providers` (`idProvider`)
+  CONSTRAINT `fk_budgets_idUser`
+    FOREIGN KEY (`idUser`)
+    REFERENCES `db_puzzleservices`.`tb_users` (`idUser`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION);
 
@@ -152,18 +147,35 @@ CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_categories_services` (
   `idService` INT(9) NOT NULL,
   `idCategory` INT(9) NOT NULL,
   PRIMARY KEY (`idService`,`idCategory`),
-  INDEX `fk_categories_services_idService` (`idService` ASC),
-  INDEX `fk_categories_services_idCategory` (`idCategory` ASC),
-  CONSTRAINT `fk_categories_services_idService`
+  INDEX `fk_subcategories_services_idService` (`idService` ASC),
+  INDEX `fk_subcategories_services_idCategory` (`idCategory` ASC),
+  CONSTRAINT `fk_subcategories_services_idService`
     FOREIGN KEY (`idService`)
     REFERENCES `db_puzzleservices`.`tb_services` (`idService`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_categories_services_idCategory`
+  CONSTRAINT `fk_subcategories_services_idCategory`
     FOREIGN KEY (`idCategory`)
-    REFERENCES `db_puzzleservices`.`tb_categories` (`idCategory`)
+    REFERENCES `db_puzzleservices`.`tb_subcategories` (`idCategory`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION);
+
+
+-- -----------------------------------------------------
+-- Table `db_puzzleservices`.`tb_users_locations`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_users_locations` (
+  `idUser` INT(9) NOT NULL,
+  `idLocation` INT(9) NOT NULL,
+  `nome` VARCHAR(20) NOT NULL,
+  PRIMARY KEY (`idUser`,`idLocation`),
+  INDEX `fk__users_locations_idUser` (`idUser` ASC),
+  CONSTRAINT `fk__users_locations_idUser`
+    FOREIGN KEY (`idUser`)
+    REFERENCES `db_puzzleservices`.`tb_users` (`idUser`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION);
+
 
 
 SET SQL_MODE=@OLD_SQL_MODE;

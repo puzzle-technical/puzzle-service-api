@@ -30,7 +30,13 @@ module.exports.verifyJWT = (req, res, next) => {
   jwt.verify(token, process.env.SECRET, function (err, decoded) {
     if (err) return res.status(500).json(new Response(false, 'Failed to authenticate token', err));
 
-    req.generalUserId = decoded.id
+    req.idUser = decoded.idUser
     next()
+  })
+}
+
+module.exports.generateToken = (idUser) => {
+  return jwt.sign({ idUser }, process.env.SECRET, {
+    expiresIn: 600
   })
 }
