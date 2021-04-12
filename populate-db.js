@@ -56,10 +56,11 @@ let generateCep = () => {
 }
 
 let generateEmail = name => {
+  // return name.split(' ')[0] + '@gmail.com'
   let value = name;
   for (let i = 0; i < 3; i++) value+= rand(9);
   value += '@gmail.com';
-  return value.replace(/\s/g, ''); 
+  return value.replace(/\s/g, '');
 }
 
 let generatePhone = () => {
@@ -107,11 +108,10 @@ Object.keys(categories).forEach(async cat => {
 
 for (let i = 0; i < 30; i++) {
   let name = generateName();
-  let { senha, salt } = auth.gerarSenha("senha123")
-
+  
   let user = {
     tipoUser: i < 15 ? 1 : 2,
-    status: 2,
+    status: 'ativo',
     cpf: generateCpf(),
     nome: name,
     email: generateEmail(name),
@@ -125,42 +125,55 @@ for (let i = 0; i < 30; i++) {
     uf: "PE",
     cep: generateCep(),
     avaliacao: Math.random() * 5,
-    senha: senha,
-    senhaSalt: salt
+    senha: 'senha123'
   }
 
   User.create(user)
   .then(async res => {
     let id = res.insertId
 
-    for (let i = 0; i < rand(4); i++) {
-      await User.addSubcategory(id, rand(17) + 1)
-    }    
+    if (user.tipoUser == 2) {
+      for (let i = 0; i < rand(4) + 1; i++) {
+        await User.addSubcategory(id, rand(17) + 1)
+      }
+      for (let i = 0; i < rand(3) + 1; i++) {
+        await User.addLocation(id, generateCity())
+      }
+    } 
   })
   .catch(err => { console.log(err) })
 }
 
 
-// for (let i = 0; i < 15; i++) {
-//   for (let j = 0; j < rand(3)+1; j++) {
-//     Provider.addCategory(i+1, rand(categories.length-1)+1)
-//     .then().catch(err => { console.log(err) })
-//   }
-// }
+// services
 
-// for (let i = 0; i < 15; i++) {
-//   for (let j = 0; j < rand(2)+1; j++) {
-//     let service = {
-//       idUser: i,
-//       nome: `Serviço ${i}: fazer alguma coisa ${yesNo() ? '' : 'e mais outra coisa'}`,
-//       descricao: "Lorem ipsum dolor sic mundus creatus est. Imagine que este é um texto bastante longo.",
-//       localizacao: "Rua Trinta, n 206 - Jardim Paulista - Paulista - PE",
-//       dataPublic: "2020-12-01 01:54"
-//     }
-//     Service.create(service)
-//     .then().catch(err => { console.log(err) })
-//   }
-// }
+for (let i = 0; i < 15; i++) {
+  for (let j = 0; j < rand(2)+1; j++) {
+    let service = {
+      idUser: i,
+      nome: `Serviço ${i}: fazer alguma coisa ${yesNo() ? '' : 'e mais outra coisa'}`,
+      descricao: "Lorem ipsum dolor sic mundus creatus est. Imagine que este é um texto bastante longo.",
+      dataPublic: new Date(),
+    }
+    Service.create(service)
+    .then(res => {
+      let id = res.insertId
+
+      Service.addLocation(id, { 
+        uf: "PE",
+        logradouro: generateRua(),
+        numero: rand(200) + 10,
+        complemento: '',
+        bairro: generateBairro(),
+        cidade: generateCity(),
+        cep: generateCep()
+      })
+      for (let index = 0; index < rand(3) + 1; index++) {
+        Service.addSubcategory(id, rand(17) + 1)      
+      }
+    }).catch(err => { console.log(err) })
+  }
+}
 
 
 // for (let i = 0; i < 15; i++) {

@@ -30,8 +30,8 @@ User.findByID = async (idUser) => {
   return user[0][0];
 }
 
-User.findProvidersByCategories = async (categoriesIds) => {
-  users = await con.query(`SELECT DISTINCT u.* FROM tb_users u, tb_subcategories s, tb_users_subcategories uc WHERE u.idUser = uc.idUser AND uc.idSubcategory = s.idSubcategory AND s.idCategory IN (${con.escape(categoriesIds)})`);
+User.findProvidersBySubcategories = async (subcategoriesIds) => {
+  let users = await con.query(`SELECT DISTINCT u.* FROM tb_users u, tb_users_subcategories us WHERE u.idUser = us.idUser AND us.idSubcategory IN (${con.escape(subcategoriesIds)})`);
   return users[0];
 }
 
@@ -91,6 +91,7 @@ User.login = async (email, senha) => {
   const result = await con.query('SELECT * FROM tb_users WHERE email = ?', [email.toLowerCase()])
   if (!result[0].length) return false
   let user = result[0][0]
+  console.log(user);
   let validPassword = user.senha == auth.combineSenhaSalt(senha, user.senhaSalt).senha
   let validStatus = user.status.toLowerCase() == 'ativo'
   return validPassword && validStatus ? { user, token: auth.generateToken(user.idUser) } : false
@@ -98,13 +99,13 @@ User.login = async (email, senha) => {
 
 User.getLocations = async (idUser) => {
   const result = await con.query('SELECT * FROM `tb_users_locations` WHERE `idUser` = ?', [idUser])
-  console.log(result)
+  // console.log(result)
   return result[0]
 }
 
-User.addLocation = async (idUser, { idLocation, nome }) => {
-  let newLocation = { idUser, idLocation, nome }
-  let result = await con.query('INSERT INTO tb_users_locations SET ?', newLocation)
+User.addLocation = async (idUser, nome) => {
+  let result = await con.query('INSERT INTO tb_users_locations SET ?', { idUser, nome })
   return result;
 }
+
 module.exports = User;

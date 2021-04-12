@@ -17,6 +17,29 @@ exports.find = (request, response) => {
   })
 }
 
+
+exports.findBySubcategories = (request, response) => {
+  Service.findBySubcategories(request.body.subcategoriesIds)
+  .then(res => {
+    response.json(new Response(true, 'Serviço(s) encontrado(s) com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
+exports.findByLocations = (request, response) => {
+  Service.findByLocations(request.body.locations)
+  .then(res => {
+    response.json(new Response(true, 'Serviço(s) encontrado(s) com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
 exports.create = (request, response) => {
   Service.create(request.body)
   .then(res => {
@@ -50,8 +73,8 @@ exports.delete = (request, response) => {
   })
 }
 
-exports.addCategory = (request, response) => {
-  Service.addCategory(request.body.idService, request.body.idCategory)
+exports.addSubcategory = (request, response) => {
+  Service.addSubcategory(request.body.idService, request.body.idSubcategory)
   .then(res => {
     response.json(new Response(true, 'Categoria adicionada ao serviço com sucesso', res));
   })
@@ -72,10 +95,44 @@ exports.removeCategory = (request, response) => {
   })
 }
 
-exports.getCategories = (request, response) => {
-  Service.getCategories(request.params.id)
+exports.getSubcategories = (request, response) => {
+  Service.getSubcategories(request.params.idService)
   .then(res => {
     response.json(new Response(true, 'Categorias encontradas com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
+
+exports.getLocation = (request, response) => {
+  Service.getLocation(request.params.idService)
+  .then(res => {
+    response.json(new Response(true, 'Categorias encontradas com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
+exports.addLocation = (request, response) => {
+  Service.addLocation(request.body.idService, request.body.location)
+  .then(res => {
+    response.json(new Response(true, 'Local adicionado ao serviço com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
+exports.servicesToUser = (request, response) => {
+  Service.servicesToUser(request.params.idUser)
+  .then(res => {
+    response.json(new Response(true, 'Serviço encontrado com sucesso', res));
   })
   .catch(err => {
     console.log(err)

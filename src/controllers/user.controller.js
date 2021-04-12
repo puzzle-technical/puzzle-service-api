@@ -1,6 +1,7 @@
 'use strict';
 const User = require('../models/user.model');
 const Response = require('../utills/response')
+const path = require('path')
 
 exports.findByType = (request, response) => {
   User.findByType(request.params.tipoUser)
@@ -16,7 +17,7 @@ exports.findByType = (request, response) => {
 exports.findByID = (request, response) => {
   User.findByID(request.params.idUser)
   .then(res => {
-    if (!res) response.json(new Response(false, `Nenhum usuário com id ${request.params.idUser} foi encontrado`, null));
+    if (!res) return response.json(new Response(false, `Nenhum usuário com id ${request.params.idUser} foi encontrado`, null));
     response.json(new Response(true, 'Usuário encontrado com sucesso', res));
   })
   .catch(err => {
@@ -36,8 +37,8 @@ exports.findByCategory = (request, response) => {
   })
 }
 
-exports.findProvidersByCategories = (request, response) => {
-  User.findProvidersByCategories(request.body.categoriesIds)
+exports.findProvidersBySubcategories = (request, response) => {
+  User.findProvidersBySubcategories(request.body.subcategoriesIds)
   .then(res => {
     response.json(new Response(true, 'Usuário(s) encontrado(s) com sucesso', res));
   })
@@ -144,7 +145,6 @@ exports.getCategories = (request, response) => {
 exports.login = (request, response) => {
   User.login(request.body.email, request.body.senha)
   .then(res => {
-    console.log(res);
     response.json(new Response(!!res, !res ? 'Email e/ou senha incorretos.' : 'Login válido', res));
   })
   .catch(err => {
@@ -175,10 +175,37 @@ exports.getLocations = (request, response) => {
 }
 
 exports.addLocation = (request, response) => {
-  User.addLocation(request.body.idUser, request.body.location)
+  User.addLocation(request.body.idUser, request.body.nome)
   .then(res => {
     response.json(new Response(true, 'Local de atuação adicionado ao profissional com sucesso', res));
   })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
+exports.addAvatar = (request, response) => {
+  if (!request.files || !Object.keys(request.files).length) {
+    return response.json(new Response(false, 'Nenhum arquivo enviado'));
+  }
+  User.findByID(request.params.idUser)
+  .then(res => {
+    if (!res) return response.json(new Response(false, `Nenhum usuário com id ${request.params.idUser} foi encontrado`, null));
+
+    let samplefile = request.files.avatar
+    let imageType = samplefile.name.split('.')[1]
+    let uploadPath = path.join(__dirname, `../../public/img/users/user_${request.params.idUser}.${imageType}`)
+    
+    samplefile.mv(uploadPath, function(err) {
+      if (err) {
+        console.log(err)
+        return response.json(new Response(false));
+      }
+  
+      response.json(new Response(true, 'Arquivo enviado com sucesso'));
+    })
+  })  
   .catch(err => {
     console.log(err)
     response.json(new Response(false));

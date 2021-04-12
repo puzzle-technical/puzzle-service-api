@@ -6,11 +6,11 @@ const { verifyJWT } = require('../services/auth');
 
 router.get('/:tipoUser', userController.findByType);
 
-router.get('/byID/:idUser', userController.findByID);
+router.get('/findById/:idUser', userController.findByID);
 
 router.get('/byCategory/:idCategory', userController.findByCategory);
 
-router.post('/findProvidersByCategories', userController.findProvidersByCategories);
+router.post('/findProvidersBySubcategories', userController.findProvidersBySubcategories);
 
 router.get('/bySubcategory/:idSubcategory', userController.findBySubcategory);
 
@@ -32,8 +32,10 @@ router.post('/login', userController.login);
 
 router.post('/validateToken', verifyJWT, userController.validateToken);
 
-router.get('/getLocations/:idUser', userController.getLocations)
+router.get('/:idUser/getLocations', userController.getLocations)
 
 router.post('/addLocation', userController.addLocation)
+
+router.post('/:idUser/addAvatar', userController.addAvatar)
 
 module.exports = router;

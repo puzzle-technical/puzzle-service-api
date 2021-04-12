@@ -34,9 +34,7 @@ app.use('/api/categories', categoryRoutes);
 const budgetRoutes = require('./src/routes/budget.routes');
 app.use('/api/budgets', budgetRoutes);
 
-app.get('/', (req, res) => {
-  res.send('Puzzle Service API')
-})
+app.use('/', express.static('public'));
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);

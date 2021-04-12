@@ -68,13 +68,13 @@ Category.getSubcategoriesGroups = async () => {
   let categories = await con.query('SELECT * FROM tb_categories');
   categories = categories[0]
 
-  console.log('categ: ', categories);
+  // console.log('categ: ', categories);
 
   for (let cat of categories) {
     let subcategories = await con.query('SELECT * FROM tb_subcategories WHERE idCategory = ?', [cat.idCategory])
     subcategories = subcategories[0]
 
-    console.log('subcateg: ', subcategories);
+    // console.log('subcateg: ', subcategories);
 
     pushToResult({
       idCategory: cat.idCategory,
