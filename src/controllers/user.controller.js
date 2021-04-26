@@ -3,6 +3,7 @@ const User = require('../models/user.model');
 const Response = require('../utills/response')
 const path = require('path')
 
+
 exports.findByType = (request, response) => {
   User.findByType(request.params.tipoUser)
   .then(res => {
@@ -225,7 +226,7 @@ exports.addAvatar = (request, response) => {
         return response.json(new Response(false));
       }
   
-      User.update(request.params.idUser, { avatar: `http://localhost:5000/img/users/user_${request.params.idUser}.${imageType}` })
+      User.update(request.params.idUser, { avatar: `${process.env.HOST}:${process.env.PORT}/img/users/user_${request.params.idUser}.${imageType}` })
       response.json(new Response(true, 'Arquivo enviado com sucesso'));
     })
   })  
