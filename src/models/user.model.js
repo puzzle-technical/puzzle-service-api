@@ -18,6 +18,7 @@ const User = function (user) {
   this.uf = user.uf
   this.cep = user.cep
   this.avaliacao = user.avaliacao
+  this.infoAdicional = user.infoAdicional
 
   let { senha, salt } = auth.gerarSenha(user.senha)
   this.senha = senha
@@ -77,6 +78,14 @@ User.getSubcategories = async (idUser) => {
   return subcategories[0];
 }
 
+User.updateSubcategories = async (idUser, subcategoriesIds) => {
+  await con.query('DELETE FROM tb_users_subcategories WHERE idUser = ?', [idUser])
+  for (let idSubcategory of subcategoriesIds) {
+    await User.addSubcategory(idUser, idSubcategory)
+  }
+  return subcategoriesIds
+}
+
 User.addSubcategory = async (idUser, idSubcategory) => {
   let result = await con.query('INSERT INTO tb_users_subcategories SET ?', { idUser, idSubcategory })
   return result;
@@ -106,6 +115,14 @@ User.getLocations = async (idUser) => {
 User.addLocation = async (idUser, nome) => {
   let result = await con.query('INSERT INTO tb_users_locations SET ?', { idUser, nome })
   return result;
+}
+
+User.updateLocations = async (idUser, locations) => {
+  await con.query('DELETE FROM tb_users_locations WHERE idUser = ?', [idUser])
+  for (let nome of locations) {
+    await User.addLocation(idUser, nome)
+  }
+  return locations
 }
 
 module.exports = User;

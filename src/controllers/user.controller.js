@@ -79,7 +79,7 @@ exports.create = (request, response) => {
 exports.update = (request, response) => {
   User.update(request.params.id, request.body)
   .then(res => {
-    response.json(new Response(true, 'Usuário atualizado com sucesso', res));
+    response.json(new Response(true, 'Informações atualizadas com sucesso', res));
   })
   .catch(err => {
     console.log(err)
@@ -102,6 +102,17 @@ exports.addSubcategory = (request, response) => {
   User.addSubcategory(request.body.idUser, request.body.idSubcategory)
   .then(res => {
     response.json(new Response(true, 'Subcategoria adicionada ao profissional com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
+exports.updateSubcategories = (request, response) => {
+  User.updateSubcategories(request.body.idUser, request.body.subcategoriesIds)
+  .then(res => {
+    response.json(new Response(true, 'Subcategorias atualizadas com sucesso', res));
   })
   .catch(err => {
     console.log(err)
@@ -185,6 +196,17 @@ exports.addLocation = (request, response) => {
   })
 }
 
+exports.updateLocations = (request, response) => {
+  User.updateLocations(request.body.idUser, request.body.locations)
+  .then(res => {
+    response.json(new Response(true, 'Locais de atuação atualizadas com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
 exports.addAvatar = (request, response) => {
   if (!request.files || !Object.keys(request.files).length) {
     return response.json(new Response(false, 'Nenhum arquivo enviado'));
@@ -203,6 +225,7 @@ exports.addAvatar = (request, response) => {
         return response.json(new Response(false));
       }
   
+      User.update(request.params.idUser, { avatar: `http://localhost:5000/img/users/user_${request.params.idUser}.${imageType}` })
       response.json(new Response(true, 'Arquivo enviado com sucesso'));
     })
   })  
