@@ -16,7 +16,29 @@ exports.find = (request, response) => {
     response.json(new Response(false));
   })
 }
+exports.findById = (request, response) => {
+  Service.findById(request.params.idService)
+  .then(res => {
+    if (!res) return response.json(new Response(false, `Nenhum serviço do usuario de id ${request.params.idUser} foi encontrado`, null));
+    response.json(new Response(true, 'Serviço encontrado com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
 
+exports.findByUser = (request, response) => {
+  Service.findByUser(request.params.idUser)
+  .then(res => {
+    if (!res) return response.json(new Response(false, `Nenhum serviço do usuario de id ${request.params.idUser} foi encontrado`, null));
+    response.json(new Response(true, 'Serviço encontrado com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
 
 exports.findBySubcategories = (request, response) => {
   Service.findBySubcategories(request.body.subcategoriesIds)
@@ -52,7 +74,7 @@ exports.create = (request, response) => {
 }
 
 exports.update = (request, response) => {
-  Service.update(request.params.id, request.body)
+  Service.update(request.params.idService, request.body.service)
   .then(res => {
     response.json(new Response(true, 'Serviço atualizado com sucesso', res));
   })
@@ -63,7 +85,7 @@ exports.update = (request, response) => {
 }
 
 exports.delete = (request, response) => {
-  Service.delete(request.params.id)
+  Service.delete(request.params.idService)
   .then(res => {
     response.json(new Response(true, 'Serviço removido com sucesso', res));
   })
@@ -110,7 +132,7 @@ exports.getSubcategories = (request, response) => {
 exports.getLocation = (request, response) => {
   Service.getLocation(request.params.idService)
   .then(res => {
-    response.json(new Response(true, 'Categorias encontradas com sucesso', res));
+    response.json(new Response(true, 'Local encontrado com sucesso', res));
   })
   .catch(err => {
     console.log(err)
@@ -133,6 +155,28 @@ exports.servicesToUser = (request, response) => {
   Service.servicesToUser(request.params.idUser)
   .then(res => {
     response.json(new Response(true, 'Serviço encontrado com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
+exports.updateLocation = (request, response) => {
+  Service.updateLocation(request.params.idService, request.body.location)
+  .then(res => {
+    response.json(new Response(true, 'Local do serviço atualizado com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
+exports.updateSubcategories = (request, response) => {
+  Service.updateSubcategories(request.params.idService, request.body.subcategoriesIds)
+  .then(res => {
+    response.json(new Response(true, 'Categorias do serviço atualizadas com sucesso', res));
   })
   .catch(err => {
     console.log(err)

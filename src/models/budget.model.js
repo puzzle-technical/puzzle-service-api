@@ -1,12 +1,13 @@
 'use strict';
 var con = require('../../config/db.config');
 
-const Budget = function(service) {
-  this.idBudget = service.idBudget;
-  this.descricao = service.descricao;
-  this.dataFinal = service.dataFinal;
-  this.idService = service.idService;
-  this.idUser = service.idUser;
+const Budget = function(budget) {
+  this.idBudget = budget.idBudget;
+  this.descricao = budget.descricao;
+  this.status = budget.status;
+  this.dataPublic = budget.dataPublic;
+  this.idService = budget.idService;
+  this.idUser = budget.idUser;
 }
 
 Budget.find = async (idBudget = undefined) => {
@@ -22,15 +23,26 @@ Budget.find = async (idBudget = undefined) => {
   return result[0];
 }
 
-Budget.create = async (service) => {
-  const newBudget = new Budget(service);
+
+Budget.findByService = async (idService) => {
+  const result = await con.query('SELECT * FROM tb_budgets WHERE idService = ?', [idService]);
+  return result[0];
+}
+
+Budget.findByUser = async (idUser) => {
+  const result = await con.query('SELECT * FROM tb_budgets WHERE idUser = ?', [idUser]);
+  return result[0];
+}
+
+Budget.create = async (budget) => {
+  const newBudget = new Budget(budget);
 
   const result = await con.query('INSERT INTO tb_budgets SET ?', newBudget);
   return result[0];
 }
 
-Budget.update = async (id, service) => {
-  const result = await con.query('UPDATE tb_budgets SET ? WHERE idBudget = ?', [service, Number(id)]);
+Budget.update = async (id, budget) => {
+  const result = await con.query('UPDATE tb_budgets SET ? WHERE idBudget = ?', [budget, Number(id)]);
   return result[0];
 }
 

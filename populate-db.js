@@ -89,71 +89,94 @@ let rand = (n) => {
 // ---------------------- CREATION ----------------------- //
 
 
-// categories 
+// // categories 
 
-Object.keys(categories).forEach(async cat => {
-  console.log("INSERINDO CATEGORIA: ", cat);
-  await Category.create({ nome: cat })
-  .then(res => {
-    let id = res.insertId
-    console.log("INSERINDO SUBCATEGORIA: ", cat, ", EM: ", id);
-    categories[cat].forEach(async subcat => {
-      await Category.createSubcategory({ idCategory: id, nome: subcat })
-    })
-  })
-  .catch(err => { console.log(err) })
-})
+// Object.keys(categories).forEach(async cat => {
+//   console.log("INSERINDO CATEGORIA: ", cat);
+//   await Category.create({ nome: cat })
+//   .then(res => {
+//     let id = res.insertId
+//     console.log("INSERINDO SUBCATEGORIA: ", cat, ", EM: ", id);
+//     categories[cat].forEach(async subcat => {
+//       await Category.createSubcategory({ idCategory: id, nome: subcat })
+//     })
+//   })
+//   .catch(err => { console.log(err) })
+// })
 
-// users
+// // users
 
-for (let i = 0; i < 30; i++) {
-  let name = generateName();
+// for (let i = 0; i < 30; i++) {
+//   let name = generateName();
   
-  let user = {
-    tipoUser: i < 15 ? 1 : 2,
-    status: 'ativo',
-    cpf: generateCpf(),
-    nome: name,
-    email: generateEmail(name),
-    celular: generatePhone(),
-    dataNasc: generateBirthDate(),
-    logradouro: generateRua(),
-    numero: (rand(300) + 50),
-    complemento: "",
-    bairro: generateBairro(),
-    cidade: generateCity(),
-    uf: "PE",
-    cep: generateCep(),
-    avaliacao: Math.random() * 5,
-    senha: 'senha123'
-  }
+//   let user = {
+//     tipoUser: i < 15 ? 1 : 2,
+//     status: 'ativo',
+//     cpf: generateCpf(),
+//     nome: name,
+//     email: generateEmail(name),
+//     celular: generatePhone(),
+//     dataNasc: generateBirthDate(),
+//     logradouro: generateRua(),
+//     numero: (rand(300) + 50),
+//     complemento: "",
+//     bairro: generateBairro(),
+//     cidade: generateCity(),
+//     uf: "PE",
+//     cep: generateCep(),
+//     avaliacao: Math.random() * 5,
+//     senha: 'senha123'
+//   }
 
-  User.create(user)
-  .then(async res => {
-    let id = res.insertId
+//   User.create(user)
+//   .then(async res => {
+//     let id = res.insertId
 
-    if (user.tipoUser == 2) {
-      for (let i = 0; i < rand(4) + 1; i++) {
-        await User.addSubcategory(id, rand(17) + 1)
-      }
-      for (let i = 0; i < rand(3) + 1; i++) {
-        await User.addLocation(id, generateCity())
-      }
-    } 
-  })
-  .catch(err => { console.log(err) })
-}
+//     if (user.tipoUser == 2) {
+//       for (let i = 0; i < rand(4) + 1; i++) {
+//         await User.addSubcategory(id, rand(17) + 1)
+//       }
+//       for (let i = 0; i < rand(3) + 1; i++) {
+//         await User.addLocation(id, generateCity())
+//       }
+//     } 
+//   })
+//   .catch(err => { console.log(err) })
+// }
 
 
 // services
+let a = ['Costruir', 'Consertar', 'Reparar', 'Instalar']
+let f = {
+  b: [' uma', ' a minha', ' minha', ''],
+  c: [' casa', ' pia', ' privada', ' piscina', ' lampâda', ' cadeira', ' televisão', ' garagem'],
+}
+let m = {
+  b: [' um', ' o meu', ' meu', ''],
+  c: [' telhado', ' escritório', ' banheiro', ' disjuntor', ' chuveiro', ' portão']
+}
+let d = [`Lorem ipsum et dapibus mattis nostra laoreet odio fames, per congue placerat class viverra platea ut quis consectetur, rhoncus donec vitae vestibulum placerat cras tincidunt. venenatis nam mollis potenti tristique aenean molestie curabitur vulputate enim donec lectus, nam sed dictum volutpat proin commodo aenean velit augue donec, nunc aptent nunc laoreet habitant arcu mollis eget himenaeos curabitur.
+
+Ac nunc ultricies sapien id cursus vel, donec netus volutpat habitasse auctor dictum euismod, egestas blandit sem praesent consequat. aptent integer ut egestas nec senectus primis vestibulum, curabitur ut suspendisse quis euismod nulla curabitur, curae ac primis sit class nullam.`,
+
+`Lorem ipsum et dapibus mattis nostra laoreet odio fames, per congue placerat class viverra platea ut quis consectetur, rhoncus donec vitae vestibulum placerat cras tincidunt. `,
+
+`Lorem ipsum et dapibus mattis nostra laoreet odio fames, per congue placerat class viverra platea ut quis consectetur, rhoncus donec vitae vestibulum placerat cras tincidunt venenatis nam mollis potenti tristique aenean molestie curabitur vulputate enim donec lectus.`,
+
+`Lorem ipsum et dapibus mattis nostra laoreet odio fames, per congue placerat class viverra platea ut quis consectetur, rhoncus donec vitae vestibulum placerat cras tincidunt. venenatis nam mollis potenti tristique aenean molestie curabitur vulputate enim donec lectus.
+
+Aptent integer ut egestas nec senectus primis vestibulum, curabitur ut suspendisse quis euismod nulla curabitur, curae ac primis sit class nullam.`,
+]
 
 for (let i = 0; i < 15; i++) {
-  for (let j = 0; j < rand(2)+1; j++) {
+  for (let j = 0; j < rand(3)+1; j++) {
     let service = {
       idUser: i,
-      nome: `Serviço ${i}: fazer alguma coisa ${yesNo() ? '' : 'e mais outra coisa'}`,
-      descricao: "Lorem ipsum dolor sic mundus creatus est. Imagine que este é um texto bastante longo.",
+      nome: `${a[rand(3)]}${yesNo() ? f.b[rand(3)] + f.c[rand(7)] : f.b[rand(3)] + f.c[rand(7)]} ${yesNo() ? '' : 'e mais outra coisa'}`,
+      descricao: d[rand(3)],
+      price: 10,
       dataPublic: new Date(),
+      status: 'aberto'
     }
     Service.create(service)
     .then(res => {

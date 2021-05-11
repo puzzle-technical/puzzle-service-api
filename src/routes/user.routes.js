@@ -22,9 +22,9 @@ router.delete('/delete/:id', userController.delete);
 
 router.post('/addSubcategory', userController.addSubcategory);
 
-router.get('/:id/getCategories', userController.getCategories);
+router.get('/:idUser/getCategories', userController.getCategories);
 
-router.get('/:id/getSubcategories', userController.getSubcategories);
+router.get('/:idUser/getSubcategories', userController.getSubcategories);
 
 router.put('/:idUser/updateSubcategories', userController.updateSubcategories);
 
@@ -41,5 +41,7 @@ router.post('/addLocation', userController.addLocation)
 router.put('/:idUser/updateLocations', userController.updateLocations);
 
 router.post('/:idUser/addAvatar', userController.addAvatar)
+
+router.post('/addOpenedService', userController.addOpenedService)
 
 module.exports = router;

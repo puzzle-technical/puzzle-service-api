@@ -5,15 +5,19 @@ const serviceController = require('../controllers/service.controller');
 
 router.get('/', serviceController.find);
 
+router.get('/findById/:idService', serviceController.findById);
+
+router.get('/findByUser/:idUser', serviceController.findByUser);
+
 router.post('/findBySubcategories', serviceController.findBySubcategories);
 
 router.post('/findByLocations', serviceController.findByLocations);
 
 router.post('/create', serviceController.create);
 
-router.put('/update/:id', serviceController.update);
+router.put('/update/:idService', serviceController.update);
 
-router.delete('/delete/:id', serviceController.delete);
+router.delete('/delete/:idService', serviceController.delete);
 
 router.post('/addSubcategory', serviceController.addSubcategory);
 
@@ -25,6 +29,10 @@ router.post('/addLocation', serviceController.addLocation);
 
 router.get('/toUser/:idUser', serviceController.servicesToUser);
 
-router.get('/:idService/getLocation/', serviceController.getSubcategories);
+router.get('/:idService/getLocation/', serviceController.getLocation);
+
+router.put('/:idService/updateLocation', serviceController.updateLocation);
+
+router.put('/:idService/updateSubcategories', serviceController.updateSubcategories);
 
 module.exports = router;

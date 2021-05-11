@@ -19,6 +19,7 @@ const User = function (user) {
   this.cep = user.cep
   this.avaliacao = user.avaliacao
   this.infoAdicional = user.infoAdicional
+  this.puzzlePoints = user.puzzlePoints
 
   let { senha, salt } = auth.gerarSenha(user.senha)
   this.senha = senha
@@ -123,6 +124,10 @@ User.updateLocations = async (idUser, locations) => {
     await User.addLocation(idUser, nome)
   }
   return locations
+}
+
+User.addOpenedService = async (idUser, idService) => {
+  await con.query('INSERT INTO tb_users_openedservices SET ?', { idUser, idService })
 }
 
 module.exports = User;

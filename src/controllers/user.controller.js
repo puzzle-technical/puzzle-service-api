@@ -133,7 +133,7 @@ exports.removeSubcategory = (request, response) => {
 }
 
 exports.getSubcategories = (request, response) => {
-  User.getSubcategories(request.params.id)
+  User.getSubcategories(request.params.idUser)
   .then(res => {
     response.json(new Response(true, 'Subcategorias encontradas com sucesso', res));
   })
@@ -144,7 +144,7 @@ exports.getSubcategories = (request, response) => {
 }
 
 exports.getCategories = (request, response) => {
-  User.getCategories(request.params.id)
+  User.getCategories(request.params.idUser)
   .then(res => {
     response.json(new Response(true, 'Subcategorias encontradas com sucesso', res));
   })
@@ -235,3 +235,15 @@ exports.addAvatar = (request, response) => {
     response.json(new Response(false));
   })
 }
+
+exports.addOpenedService = (request, response) => {
+  User.addOpenedService(request.body.idUser, request.body.idService)
+  .then(res => {
+    response.json(new Response(true, 'Subcategoria adicionada ao profissional com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
