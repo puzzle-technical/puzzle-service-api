@@ -35,4 +35,7 @@ router.put('/:idService/updateLocation', serviceController.updateLocation);
 
 router.put('/:idService/updateSubcategories', serviceController.updateSubcategories);
 
+router.get('/getOpenedServices/:idUser', serviceController.getOpenedServices);
+
+
 module.exports = router;

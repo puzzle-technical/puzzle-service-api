@@ -41,7 +41,7 @@ exports.findByUser = (request, response) => {
 }
 
 exports.findBySubcategories = (request, response) => {
-  Service.findBySubcategories(request.body.subcategoriesIds)
+  Service.findBySubcategories(request.body.subcategoriesIds, request.body.idUser)
   .then(res => {
     response.json(new Response(true, 'Serviço(s) encontrado(s) com sucesso', res));
   })
@@ -177,6 +177,17 @@ exports.updateSubcategories = (request, response) => {
   Service.updateSubcategories(request.params.idService, request.body.subcategoriesIds)
   .then(res => {
     response.json(new Response(true, 'Categorias do serviço atualizadas com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
+exports.getOpenedServices = (request, response) => {
+  Service.getOpenedServices(request.params.idUser)
+  .then(res => {
+    response.json(new Response(true, 'Serviço visitados encontrados com sucesso', res));
   })
   .catch(err => {
     console.log(err)

@@ -42,6 +42,10 @@ router.put('/:idUser/updateLocations', userController.updateLocations);
 
 router.post('/:idUser/addAvatar', userController.addAvatar)
 
+router.get('/:idUser/getOpenedServices', userController.getOpenedServices)
+
 router.post('/addOpenedService', userController.addOpenedService)
+
+router.post('/openService', userController.openService);
 
 module.exports = router;

@@ -160,6 +160,7 @@ exports.login = (request, response) => {
     response.json(new Response(!!res, !res ? 'Email e/ou senha incorretos.' : 'Login válido', res));
   })
   .catch(err => {
+    console.log(err)
     response.json(new Response(false));
   })
 }
@@ -226,10 +227,21 @@ exports.addAvatar = (request, response) => {
         return response.json(new Response(false));
       }
   
-      User.update(request.params.idUser, { avatar: `${process.env.HOST}:${process.env.PORT}/img/users/user_${request.params.idUser}.${imageType}` })
+      User.update(request.params.idUser, { avatar: `${process.env.APP_HOST}:${process.env.APP_PORT}/img/users/user_${request.params.idUser}.${imageType}` })
       response.json(new Response(true, 'Arquivo enviado com sucesso'));
     })
   })  
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
+exports.getOpenedServices = (request, response) => {
+  User.getOpenedServices(request.params.idUser)
+  .then(res => {
+    response.json(new Response(true, 'Serviço obtidos com sucesso', res));
+  })
   .catch(err => {
     console.log(err)
     response.json(new Response(false));
@@ -247,3 +259,13 @@ exports.addOpenedService = (request, response) => {
   })
 }
 
+exports.openService = (request, response) => {
+  User.openService(request.body.idUser, request.body.idService)
+  .then(res => {
+    response.json(new Response(true, 'Serviço salvo com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}

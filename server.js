@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const dbConn = require('./config/db.config');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.APP_PORT || 3000;
 
 app.use(fileUpload());
 app.use(cors())
@@ -33,6 +33,9 @@ app.use('/api/categories', categoryRoutes);
 
 const budgetRoutes = require('./src/routes/budget.routes');
 app.use('/api/budgets', budgetRoutes);
+
+const pointsRoutes = require('./src/routes/points.routes');
+app.use('/api/points', pointsRoutes);
 
 app.use('/', express.static('public'));
 

@@ -1,5 +1,6 @@
 const con = require('../../config/db.config');
 const auth = require('../services/auth');
+const Points = require('./points.model')
 
 const User = function (user) {
   this.idUser = user.idUser
@@ -101,7 +102,7 @@ User.login = async (email, senha) => {
   const result = await con.query('SELECT * FROM tb_users WHERE email = ?', [email.toLowerCase()])
   if (!result[0].length) return false
   let user = result[0][0]
-  console.log(user);
+  // console.log(user);
   let validPassword = user.senha == auth.combineSenhaSalt(senha, user.senhaSalt).senha
   let validStatus = user.status.toLowerCase() == 'ativo'
   return validPassword && validStatus ? { user, token: auth.generateToken(user.idUser) } : false
@@ -126,8 +127,25 @@ User.updateLocations = async (idUser, locations) => {
   return locations
 }
 
+User.getOpenedServices = async (idUser) => {
+  let result = await con.query('SELECT s.* FROM tb_services s, tb_users_openedservices os WHERE s.idService = os.idService AND os.idUser = ?', [idUser])
+  return result[0]
+}
+
 User.addOpenedService = async (idUser, idService) => {
   await con.query('INSERT INTO tb_users_openedservices SET ?', { idUser, idService })
+}
+
+User.openService = async (idUser, idService) => {
+  let neededPoints = Points.getServicePoints()
+  let resultUserPoints = await con.query(`SELECT puzzlePoints FROM tb_users WHERE idUser = ?`, [idUser])
+  let userPoints = resultUserPoints[0][0].puzzlePoints
+  // console.log(userPoints)
+
+  await con.query(`UPDATE tb_users SET ? WHERE idUser = ?`, [{ puzzlePoints: userPoints - neededPoints }, idUser])
+
+  let result = await con.query(`INSERT INTO tb_users_openedservices SET ?`, { idUser, idService })
+  return result
 }
 
 module.exports = User;

@@ -27,7 +27,7 @@ module.exports.verifyJWT = (req, res, next) => {
   const token = req.headers['x-access-token']
   if (!token) return res.status(401).json(new Response(false, 'No token provided'))
 
-  jwt.verify(token, process.env.SECRET, function (err, decoded) {
+  jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
     if (err) return res.status(500).json(new Response(false, 'Failed to authenticate token', err));
 
     req.idUser = decoded.idUser
@@ -36,7 +36,7 @@ module.exports.verifyJWT = (req, res, next) => {
 }
 
 module.exports.generateToken = (idUser) => {
-  return jwt.sign({ idUser }, process.env.SECRET, {
+  return jwt.sign({ idUser }, process.env.JWT_SECRET, {
     expiresIn: 600
   })
 }

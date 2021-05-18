@@ -6,7 +6,6 @@ const Service = function(service) {
   this.nome = service.nome;
   this.status = service.status;
   this.descricao = service.descricao;
-  this.price = service.price;
   this.dataPublic = service.dataPublic;
   this.idUser = service.idUser;
   this.receivers = service.receivers;
@@ -39,8 +38,8 @@ Service.findByUser = async (idUser) => {
   return result[0]
 }
 
-Service.findBySubcategories = async (subcategoriesIds) => {
-  let services = await con.query(`SELECT DISTINCT s.* FROM tb_services s, tb_subcategories_services ss WHERE s.idService = ss.idService AND ss.idSubcategory IN (${con.escape(subcategoriesIds)})`)
+Service.findBySubcategories = async (subcategoriesIds, idUser) => {
+  let services = await con.query(`SELECT DISTINCT s.* FROM tb_services s, tb_subcategories_services ss WHERE s.idService = ss.idService AND ss.idSubcategory IN (${con.escape(subcategoriesIds)}) AND s.receiversOnly = 0 AND s.idService NOT IN (SELECT idService FROM tb_users_openedservices WHERE idUser = ?)`, [idUser])
   services = services[0];
 
   let result = []
@@ -63,8 +62,8 @@ Service.findBySubcategories = async (subcategoriesIds) => {
 }
 
 
-Service.findByLocations = async (locations) => {
-  let services = await con.query(`SELECT DISTINCT s.* FROM tb_services s, tb_services_locations sl WHERE sl.idService = s.idService AND sl.cidade IN (${con.escape(locations)})`)
+Service.findByLocations = async (locations, idUser) => {
+  let services = await con.query(`SELECT DISTINCT s.* FROM tb_services s, tb_services_locations sl WHERE sl.idService = s.idService AND sl.cidade IN (${con.escape(locations)}) AND s.receiversOnly = 0 AND s.idService NOT IN (SELECT idService FROM tb_users_openedservices WHERE idUser = ?)`, [idUser])
   services = services[0];
 
   let result = []
@@ -131,7 +130,7 @@ Service.addLocation = async (idService, location) => {
 }
 
 Service.servicesToUser = async (idUser) => {
-  let services = await con.query('SELECT * FROM `tb_services` WHERE `receivers` LIKE "%' + idUser + '%"')
+  let services = await con.query(`SELECT * FROM tb_services WHERE receivers LIKE "%${idUser};%" AND idService NOT IN (SELECT idService FROM tb_users_openedservices WHERE idUser = ?)`, [idUser])
   services = services[0];
 
   let result = []
@@ -167,5 +166,9 @@ Service.updateSubcategories = async (idService, subcategoriesIds) => {
   return subcategoriesIds
 }
 
+Service.getOpenedServices = async (idUser) => {
+  let result = await con.query(`SELECT s.* FROM tb_services s, tb_users_openedservices os WHERE s.idService = os.idService AND os.idUser = ?`, [idUser])
+  return result[0]
+}
 
 module.exports = Service;
