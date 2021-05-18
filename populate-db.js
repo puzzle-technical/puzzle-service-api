@@ -89,60 +89,60 @@ let rand = (n) => {
 // ---------------------- CREATION ----------------------- //
 
 
-// // categories 
+// categories 
 
-// Object.keys(categories).forEach(async cat => {
-//   console.log("INSERINDO CATEGORIA: ", cat);
-//   await Category.create({ nome: cat })
-//   .then(res => {
-//     let id = res.insertId
-//     console.log("INSERINDO SUBCATEGORIA: ", cat, ", EM: ", id);
-//     categories[cat].forEach(async subcat => {
-//       await Category.createSubcategory({ idCategory: id, nome: subcat })
-//     })
-//   })
-//   .catch(err => { console.log(err) })
-// })
+Object.keys(categories).forEach(async cat => {
+  console.log("INSERINDO CATEGORIA: ", cat);
+  await Category.create({ nome: cat })
+  .then(res => {
+    let id = res.insertId
+    console.log("INSERINDO SUBCATEGORIA: ", cat, ", EM: ", id);
+    categories[cat].forEach(async subcat => {
+      await Category.createSubcategory({ idCategory: id, nome: subcat })
+    })
+  })
+  .catch(err => { console.log(err) })
+})
 
-// // users
+// users
 
-// for (let i = 0; i < 30; i++) {
-//   let name = generateName();
+for (let i = 0; i < 30; i++) {
+  let name = generateName();
   
-//   let user = {
-//     tipoUser: i < 15 ? 1 : 2,
-//     status: 'ativo',
-//     cpf: generateCpf(),
-//     nome: name,
-//     email: generateEmail(name),
-//     celular: generatePhone(),
-//     dataNasc: generateBirthDate(),
-//     logradouro: generateRua(),
-//     numero: (rand(300) + 50),
-//     complemento: "",
-//     bairro: generateBairro(),
-//     cidade: generateCity(),
-//     uf: "PE",
-//     cep: generateCep(),
-//     avaliacao: Math.random() * 5,
-//     senha: 'senha123'
-//   }
+  let user = {
+    tipoUser: i < 15 ? 1 : 2,
+    status: 'ativo',
+    cpf: generateCpf(),
+    nome: name,
+    email: generateEmail(name),
+    celular: generatePhone(),
+    dataNasc: generateBirthDate(),
+    logradouro: generateRua(),
+    numero: (rand(300) + 50),
+    complemento: "",
+    bairro: generateBairro(),
+    cidade: generateCity(),
+    uf: "PE",
+    cep: generateCep(),
+    avaliacao: Math.random() * 5,
+    senha: 'senha123'
+  }
 
-//   User.create(user)
-//   .then(async res => {
-//     let id = res.insertId
+  User.create(user)
+  .then(async res => {
+    let id = res.insertId
 
-//     if (user.tipoUser == 2) {
-//       for (let i = 0; i < rand(4) + 1; i++) {
-//         await User.addSubcategory(id, rand(17) + 1)
-//       }
-//       for (let i = 0; i < rand(3) + 1; i++) {
-//         await User.addLocation(id, generateCity())
-//       }
-//     } 
-//   })
-//   .catch(err => { console.log(err) })
-// }
+    if (user.tipoUser == 2) {
+      for (let i = 0; i < rand(4) + 1; i++) {
+        await User.addSubcategory(id, rand(17) + 1)
+      }
+      for (let i = 0; i < rand(3) + 1; i++) {
+        await User.addLocation(id, generateCity())
+      }
+    } 
+  })
+  .catch(err => { console.log(err) })
+}
 
 
 // services
@@ -176,7 +176,8 @@ for (let i = 0; i < 15; i++) {
       descricao: d[rand(3)],
       price: 10,
       dataPublic: new Date(),
-      status: 'aberto'
+      status: 'aberto',
+      receiversOnly: 0
     }
     Service.create(service)
     .then(res => {
