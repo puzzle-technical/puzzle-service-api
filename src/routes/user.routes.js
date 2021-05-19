@@ -4,48 +4,51 @@ const router = express.Router();
 const userController = require('../controllers/user.controller');
 const { verifyJWT } = require('../services/auth');
 
-router.get('/:tipoUser', userController.findByType);
 
-router.get('/findById/:idUser', userController.findByID);
+// GET
+router.get('/:idUser', userController.findByID);
 
-router.get('/byCategory/:idCategory', userController.findByCategory);
+router.get('/findByType/:tipoUser', userController.findByType);
 
-router.post('/findProvidersBySubcategories', userController.findProvidersBySubcategories);
+router.get('/findBySubcategories/:subcategoriesIds', userController.findBySubcategories);
 
-router.get('/bySubcategory/:idSubcategory', userController.findBySubcategory);
-
-router.post('/create', userController.create);
-
-router.put('/update/:id', userController.update);
-
-router.delete('/delete/:id', userController.delete);
-
-router.post('/addSubcategory', userController.addSubcategory);
-
-router.get('/:idUser/getCategories', userController.getCategories);
+router.get('/findByLocations/:nomes', userController.findByLocations);
 
 router.get('/:idUser/getSubcategories', userController.getSubcategories);
 
-router.put('/:idUser/updateSubcategories', userController.updateSubcategories);
+router.get('/:idUser/getLocations', userController.getLocations);
 
-router.delete('/:idUser/removeSubcategory/:idSubcategory', userController.removeSubcategory);
+router.get('/:idUser/getOpenedServices', userController.getOpenedServices);
+
+
+// // POST
+router.post('/create', userController.create);
 
 router.post('/login', userController.login);
 
 router.post('/validateToken', verifyJWT, userController.validateToken);
 
-router.get('/:idUser/getLocations', userController.getLocations)
+router.post('/:idUser/addSubcategories', userController.addSubcategories);
 
-router.post('/addLocation', userController.addLocation)
+router.post('/:idUser/addLocations', userController.addLocations);
 
-router.put('/:idUser/updateLocations', userController.updateLocations);
+router.post('/:idUser/addAvatar', userController.addAvatar);
 
-router.post('/:idUser/addAvatar', userController.addAvatar)
+router.post('/:idUser/addOpenedService', userController.addOpenedService);
 
-router.get('/:idUser/getOpenedServices', userController.getOpenedServices)
 
-router.post('/addOpenedService', userController.addOpenedService)
+// // PUT
+router.put('/:idUser/update', userController.update);
 
-router.post('/openService', userController.openService);
+router.put('/:idUser/replaceSubcategories', userController.replaceSubcategories);
+
+router.put('/:idUser/replaceLocations', userController.replaceLocations);
+
+
+// // DELETE
+router.delete('/:idUser/delete', userController.delete);
+
+// router.delete('/:idUser/removeOpenedService', userController.addOpenedService)
+
 
 module.exports = router;

@@ -1,196 +1,65 @@
-'use strict';
-const Service = require('../models/service.model');
+const Service = require('../models/service.model')
+const wrap = require('../utills/wrap')
 const Response = require('../utills/response')
 
-exports.find = (request, response) => {
-  Service.find(request.query['idService'])
-  .then(res => {
-    if (res == null) {
-      response.json(new Response(false, 'Nenhum serviço com este id não encontrado', res));
-      return
-    }
-    response.json(new Response(true, 'Serviço(s) encontrado(s) com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
-}
 exports.findById = (request, response) => {
-  Service.findById(request.params.idService)
-  .then(res => {
-    if (!res) return response.json(new Response(false, `Nenhum serviço do usuario de id ${request.params.idUser} foi encontrado`, null));
-    response.json(new Response(true, 'Serviço encontrado com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
+  wrap(response, Service.findById(request.params.idService), 'Serviço encontrado com sucesso')
 }
 
 exports.findByUser = (request, response) => {
-  Service.findByUser(request.params.idUser)
-  .then(res => {
-    if (!res) return response.json(new Response(false, `Nenhum serviço do usuario de id ${request.params.idUser} foi encontrado`, null));
-    response.json(new Response(true, 'Serviço encontrado com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
+  wrap(response, Service.findByUser(request.params.idUser), 'Serviços encontrados com sucesso')
+}
+
+exports.findToProvider = (request, response) => {
+  wrap(response, Service.findToProvider(request.params.idUser), 'Serviços encontrados com sucesso')
 }
 
 exports.findBySubcategories = (request, response) => {
-  Service.findBySubcategories(request.body.subcategoriesIds, request.body.idUser)
-  .then(res => {
-    response.json(new Response(true, 'Serviço(s) encontrado(s) com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
+  let subcategoriesIds
+  try { subcategoriesIds = JSON.parse(request.params.subcategoriesIds) }
+  catch (error) { console.log(err); return response.send(new Response(false)) }
+  wrap(response, Service.findBySubcategories(subcategoriesIds), 'Serviços encontrados com sucesso')
 }
 
 exports.findByLocations = (request, response) => {
-  Service.findByLocations(request.body.locations)
-  .then(res => {
-    response.json(new Response(true, 'Serviço(s) encontrado(s) com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
-}
-
-exports.create = (request, response) => {
-  Service.create(request.body)
-  .then(res => {
-    response.json(new Response(true, 'Serviço criado com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
-}
-
-exports.update = (request, response) => {
-  Service.update(request.params.idService, request.body.service)
-  .then(res => {
-    response.json(new Response(true, 'Serviço atualizado com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
-}
-
-exports.delete = (request, response) => {
-  Service.delete(request.params.idService)
-  .then(res => {
-    response.json(new Response(true, 'Serviço removido com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
-}
-
-exports.addSubcategory = (request, response) => {
-  Service.addSubcategory(request.body.idService, request.body.idSubcategory)
-  .then(res => {
-    response.json(new Response(true, 'Categoria adicionada ao serviço com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
-}
-
-exports.removeCategory = (request, response) => {
-  Service.removeCategory(request.params.idService, request.params.idCategory)
-  .then(res => {
-    response.json(new Response(true, 'Categoria removida do serviço com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
+  let nomes
+  try { nomes = JSON.parse(request.params.nomes) }
+  catch (error) { console.log(err); return response.send(new Response(false)) }
+  wrap(response, Service.findByLocations(nomes), 'Serviços encontrados com sucesso')
 }
 
 exports.getSubcategories = (request, response) => {
-  Service.getSubcategories(request.params.idService)
-  .then(res => {
-    response.json(new Response(true, 'Categorias encontradas com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
+  wrap(response, Service.getSubcategories(request.params.idService), 'Subcategorias encontradas com sucesso')
 }
 
-
 exports.getLocation = (request, response) => {
-  Service.getLocation(request.params.idService)
-  .then(res => {
-    response.json(new Response(true, 'Local encontrado com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
+  wrap(response, Service.getLocation(request.params.idService), 'Locais encontrados com sucesso')
+}
+
+exports.create = (request, response) => {
+  wrap(response, Service.create(request.body.service), 'Serviço criado com sucesso.')
+}
+
+exports.addSubcategories = (request, response) => {
+  wrap(response, Service.addSubcategories(request.params.idService, request.body.subcategoriesIds), 'Subcategoria adicionadas com sucesso')
 }
 
 exports.addLocation = (request, response) => {
-  Service.addLocation(request.body.idService, request.body.location)
-  .then(res => {
-    response.json(new Response(true, 'Local adicionado ao serviço com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
+  wrap(response, Service.addLocation(request.params.idService, request.body.location), 'Local adicionado com sucesso')
 }
 
-exports.servicesToUser = (request, response) => {
-  Service.servicesToUser(request.params.idUser)
-  .then(res => {
-    response.json(new Response(true, 'Serviço encontrado com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
+exports.update = (request, response) => {
+  wrap(response, Service.update(request.params.idService, request.body.service), 'Serviço atualizado com sucesso')
 }
 
 exports.updateLocation = (request, response) => {
-  Service.updateLocation(request.params.idService, request.body.location)
-  .then(res => {
-    response.json(new Response(true, 'Local do serviço atualizado com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
+  wrap(response, Service.updateLocation(request.params.idService, request.body.location), 'Local do serviço atualizado com sucesso')
 }
 
-exports.updateSubcategories = (request, response) => {
-  Service.updateSubcategories(request.params.idService, request.body.subcategoriesIds)
-  .then(res => {
-    response.json(new Response(true, 'Categorias do serviço atualizadas com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
+exports.replaceSubcategories = (request, response) => {
+  wrap(response, Service.replaceSubcategories(request.params.idService, request.body.subcategoriesIds), 'Subcategorias do serviço atualizadas com sucesso')
 }
 
-exports.getOpenedServices = (request, response) => {
-  Service.getOpenedServices(request.params.idUser)
-  .then(res => {
-    response.json(new Response(true, 'Serviço visitados encontrados com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
+exports.delete = (request, response) => {
+  wrap(response, Service.delete(request.params.idService), 'Serviço removido com sucesso')
 }

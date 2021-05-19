@@ -3,16 +3,25 @@ const router = express.Router();
 
 const budgetController = require('../controllers/budget.controller');
 
-router.get('/', budgetController.find);
 
-router.get('/findByService/:idService', budgetController.findByService);
+// GET
+router.get('/:idBudget', budgetController.findById);
 
 router.get('/findByUser/:idUser', budgetController.findByUser);
 
+router.get('/findByService/:idService', budgetController.findByService);
+
+
+// POST
 router.post('/create', budgetController.create);
 
-router.put('/update/:idBudget', budgetController.update);
 
-router.delete('/delete/:idBudget', budgetController.delete);
+// PUT
+router.put('/:idBudget/update', budgetController.update);
+
+
+//DELETE
+router.delete('/:idBudget/delete', budgetController.delete);
+
 
 module.exports = router;

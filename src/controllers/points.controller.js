@@ -1,5 +1,6 @@
-const Points = require('../models/points.model');
+const Points = require('../models/points.model')
 const Response = require('../utills/response')
+const wrap = require('../utills/wrap')
 
 exports.getServicePoints = (request, response) => {
   let points = Points.getServicePoints()
@@ -17,13 +18,5 @@ exports.getPacks = (request, response) => {
 }
 
 exports.createCheckoutSession = (request, response) => {
-  Points.createCheckoutSession(request.body.idPack, request.body.email)
-  .then(res => {
-    response.json(new Response(true, 'Sessão criada com sucesso', res));
-  })
-  .catch(err => {
-    console.log(err)
-    response.json(new Response(false));
-  })
-  
+  wrap(response, Points.createCheckoutSession(request.body.idPack, request.body.email), 'Sessão criada com sucesso')  
 }

@@ -194,10 +194,9 @@ CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_users_openedservices` (
 -- Table `db_puzzleservices`.`tb_users_locations`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_users_locations` (
-  `idLocation` INT(9) NOT NULL AUTO_INCREMENT,
   `idUser` INT(9) NOT NULL,
   `nome` VARCHAR(40) NOT NULL,
-  PRIMARY KEY (`idLocation`),
+  PRIMARY KEY (`idUser`, `nome`),
   INDEX `fk__users_locations_idUser` (`idUser` ASC),
   CONSTRAINT `fk__users_locations_idUser`
     FOREIGN KEY (`idUser`)

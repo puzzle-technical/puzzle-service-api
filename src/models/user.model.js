@@ -19,83 +19,59 @@ const User = function (user) {
   this.uf = user.uf
   this.cep = user.cep
   this.avaliacao = user.avaliacao
-  this.infoAdicional = user.infoAdicional
   this.puzzlePoints = user.puzzlePoints
+  this.infoAdicional = user.infoAdicional
 
   let { senha, salt } = auth.gerarSenha(user.senha)
   this.senha = senha
   this.senhaSalt = salt
 }
 
+const userBasicInfo = ['idUser', 'tipoUser', 'nome', 'email', 'celular', 'avaliacao', 'puzzlePoints', 'infoAdicional']
+const userAdressInfo = ['logradouro', 'numero', 'complemento', 'bairro', 'cidade', 'uf', 'cep']
+const userFullInfo = userBasicInfo.concat(userAdressInfo)
+const userInfoPrefix = (prefix, info) => info.map(key => `${prefix}.${key}`)
+
 User.findByID = async (idUser) => {
-  let user = await con.query('SELECT * FROM tb_users WHERE idUser = ?', [idUser]);
-  if (!user || user[0].length < 1) return null;
+  let user = await con.query(`SELECT ${userFullInfo} FROM tb_users WHERE status = 2 AND idUser = ${idUser}`);
+  if (!user[0] || user[0].length < 1) return null;
   return user[0][0];
 }
 
-User.findProvidersBySubcategories = async (subcategoriesIds) => {
-  let users = await con.query(`SELECT DISTINCT u.* FROM tb_users u, tb_users_subcategories us WHERE u.idUser = us.idUser AND us.idSubcategory IN (${con.escape(subcategoriesIds)})`);
-  return users[0];
-}
-
-User.findByCategory = async (idCategory) => {
-  users = await con.query('SELECT DISTINCT u.* FROM tb_users u, tb_subcategories s, tb_users_subcategories uc WHERE u.idUser = uc.idUser AND uc.idSubcategory = s.idSubcategory AND s.idCategory = ?', idCategory);
-  return users[0];
-}
-
-User.findBySubcategory = async (idSubcategory) => {
-  users = await con.query('SELECT DISTINCT u.* FROM tb_users u, tb_subcategories s, tb_users_subcategories uc WHERE u.idUser = uc.idUser AND uc.idSubcategory = s.idSubcategory AND s.idSubcategory = ?', idSubcategory);
-  return users[0];
-}
-
-User.findByType = async (tipoUser = 1) => {
-  let user = await con.query('SELECT * FROM tb_users WHERE status = 2 AND tipoUser = ?', [tipoUser]);
+User.findByType = async (tipoUser) => {
+  let user = await con.query(`SELECT ${userFullInfo} FROM tb_users WHERE status = 2 AND tipoUser = ${tipoUser}`);
   return user[0];
+}
+
+User.findBySubcategories = async (subcategoriesIds) => {
+  let users = await con.query(`SELECT DISTINCT ${userInfoPrefix('u', userFullInfo)} FROM tb_users u, tb_users_subcategories us WHERE u.idUser = us.idUser AND us.idSubcategory IN (${con.escape(subcategoriesIds)})`);
+  return users[0];
+}
+
+User.findByLocations = async (nomes) => {
+  let users = await con.query(`SELECT DISTINCT ${userInfoPrefix('u', userFullInfo)} FROM tb_users u, tb_users_locations ul WHERE u.idUser = ul.idUser AND ul.nome IN (${con.escape(nomes)})`);
+  return users[0];
+}
+
+User.getSubcategories = async (idUser) => {
+  let subcategories = await con.query(`SELECT DISTINCT s.* FROM tb_subcategories S, tb_users_subcategories us WHERE s.idSubcategory = us.idSubcategory AND us.idUser = ${idUser}`);
+  return subcategories[0];
+}
+
+User.getLocations = async (idUser) => {
+  const result = await con.query(`SELECT * FROM tb_users_locations WHERE idUser = ${idUser}`)
+  return result[0]
+}
+
+User.getOpenedServices = async (idUser) => {
+  let result = await con.query(`SELECT s.* FROM tb_services s, tb_users_openedservices os WHERE s.idService = os.idService AND os.idUser = ${idUser}`)
+  return result[0]
 }
 
 User.create = async (user) => {
   const newUser = new User(user);
-
   const result = await con.query('INSERT INTO tb_users SET ?', newUser);
   return result[0];
-}
-
-User.update = async (id, user) => {
-  const result = await con.query('UPDATE tb_users SET ? WHERE idUser = ?', [user, Number(id)]);
-  return result[0];
-}
-
-User.delete = async (id) => {
-  const result = await con.query('DELETE FROM tb_users WHERE idUser = ?', [id]);
-  return result[0];
-}
-
-User.getCategories = async (idUser) => {
-  let categories = await con.query('SELECT DISTINCT c.* FROM tb_categories c, tb_subcategories S, tb_users_subcategories us WHERE c.idCategory = s.idCategory AND s.idSubcategory = us.idSubcategory AND us.idUser = ?', [idUser]);
-  return categories[0];
-}
-
-User.getSubcategories = async (idUser) => {
-  let subcategories = await con.query('SELECT DISTINCT s.* FROM tb_subcategories S, tb_users_subcategories us WHERE s.idSubcategory = us.idSubcategory AND us.idUser = ?', [idUser]);
-  return subcategories[0];
-}
-
-User.updateSubcategories = async (idUser, subcategoriesIds) => {
-  await con.query('DELETE FROM tb_users_subcategories WHERE idUser = ?', [idUser])
-  for (let idSubcategory of subcategoriesIds) {
-    await User.addSubcategory(idUser, idSubcategory)
-  }
-  return subcategoriesIds
-}
-
-User.addSubcategory = async (idUser, idSubcategory) => {
-  let result = await con.query('INSERT INTO tb_users_subcategories SET ?', { idUser, idSubcategory })
-  return result;
-}
-
-User.removeSubcategory = async (idUser, idSubcategory) => {
-  let result = await con.query('DELETE FROM tb_users_subcategories WHERE idUser = ? AND idSubcategory = ?', [idUser, idSubcategory]);
-  return result;
 }
 
 User.login = async (email, senha) => {
@@ -105,47 +81,56 @@ User.login = async (email, senha) => {
   // console.log(user);
   let validPassword = user.senha == auth.combineSenhaSalt(senha, user.senhaSalt).senha
   let validStatus = user.status.toLowerCase() == 'ativo'
-  return validPassword && validStatus ? { user, token: auth.generateToken(user.idUser) } : false
+  let returnUser = {}
+  userFullInfo.forEach(key => returnUser[key] = user[key])
+  return validPassword && validStatus ? { user: returnUser, token: auth.generateToken(user.idUser) } : false
 }
 
-User.getLocations = async (idUser) => {
-  const result = await con.query('SELECT * FROM `tb_users_locations` WHERE `idUser` = ?', [idUser])
-  // console.log(result)
-  return result[0]
+User.addSubcategories = async (idUser, subcategoriesIds) => {
+  if (!subcategoriesIds.length) return []
+  let values = subcategoriesIds.map(id => `(${id}, ${idUser})`).join(', ')
+  let result = await con.query(`INSERT INTO tb_users_subcategories (idSubcategory, idUser) VALUES ${values}`)
+  return result[0];
 }
 
-User.addLocation = async (idUser, nome) => {
-  let result = await con.query('INSERT INTO tb_users_locations SET ?', { idUser, nome })
-  return result;
-}
-
-User.updateLocations = async (idUser, locations) => {
-  await con.query('DELETE FROM tb_users_locations WHERE idUser = ?', [idUser])
-  for (let nome of locations) {
-    await User.addLocation(idUser, nome)
-  }
-  return locations
-}
-
-User.getOpenedServices = async (idUser) => {
-  let result = await con.query('SELECT s.* FROM tb_services s, tb_users_openedservices os WHERE s.idService = os.idService AND os.idUser = ?', [idUser])
-  return result[0]
+User.addLocations = async (idUser, nomes) => {
+  if (!nomes.length) return []
+  let values = nomes.map(nome => `(${idUser}, "${nome}")`).join(', ')
+  let result = await con.query(`INSERT INTO tb_users_locations (idUser, nome) VALUES ${values}`)
+  return result[0];
 }
 
 User.addOpenedService = async (idUser, idService) => {
-  await con.query('INSERT INTO tb_users_openedservices SET ?', { idUser, idService })
+  let result = await con.query(`INSERT INTO tb_users_openedservices SET ?`, { idUser, idService })
+  await User.addPuzzlePoints(idUser, Points.getServicePoints() * (-1))
+  return result[0]
 }
 
-User.openService = async (idUser, idService) => {
-  let neededPoints = Points.getServicePoints()
-  let resultUserPoints = await con.query(`SELECT puzzlePoints FROM tb_users WHERE idUser = ?`, [idUser])
-  let userPoints = resultUserPoints[0][0].puzzlePoints
-  // console.log(userPoints)
+User.addPuzzlePoints = async (idUser, points) => {
+  let result = await con.query(`UPDATE tb_users SET puzzlePoints = puzzlePoints + ${points} WHERE idUser = ${idUser}`)
+  return result[0]
+}
 
-  await con.query(`UPDATE tb_users SET ? WHERE idUser = ?`, [{ puzzlePoints: userPoints - neededPoints }, idUser])
+User.update = async (idUser, user) => {
+  const result = await con.query(`UPDATE tb_users SET ? WHERE idUser = ${idUser}`, user);
+  return result[0];
+}
 
-  let result = await con.query(`INSERT INTO tb_users_openedservices SET ?`, { idUser, idService })
-  return result
+User.replaceSubcategories = async (idUser, subcategoriesIds) => {
+  const result = await con.query(`DELETE FROM tb_users_subcategories WHERE idUser = ${idUser}`);
+  await User.addSubcategories(idUser, subcategoriesIds)
+  return result[0];
+}
+
+User.replaceLocations = async (idUser, nomes) => {
+  const result = await con.query(`DELETE FROM tb_users_locations WHERE idUser = ${idUser}`);
+  await User.addLocations(idUser, nomes)
+  return result[0];
+}
+
+User.delete = async (idUser) => {
+  const result = await con.query(`DELETE FROM tb_users WHERE idUser = ${idUser}`);
+  return result[0];
 }
 
 module.exports = User;

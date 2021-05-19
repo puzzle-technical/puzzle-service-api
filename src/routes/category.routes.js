@@ -3,16 +3,15 @@ const router = express.Router();
 
 const categoryController = require('../controllers/category.controller');
 
+//GET
 router.get('/', categoryController.find);
 
-router.post('/create', categoryController.create);
+router.get('/:idCategory', categoryController.findById);
 
-router.put('/update/:id', categoryController.update);
+router.get('/subcategories', categoryController.findSubcategories);
 
-router.delete('/delete/:id', categoryController.delete);
+router.get('/subcategories/:idSubcategory', categoryController.findSubcategoryById);
 
-router.get('/getSubcategoriesGroups', categoryController.getSubcategoriesGroups);
-
-router.get('/findSubcategory', categoryController.findSubcategory);
+router.get('/subcategories/findByCategory/:idCategory', categoryController.findSubcategoriesByCategory);
 
 module.exports = router;
