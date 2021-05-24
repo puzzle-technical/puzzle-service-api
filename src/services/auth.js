@@ -37,6 +37,6 @@ module.exports.verifyJWT = (req, res, next) => {
 
 module.exports.generateToken = (idUser) => {
   return jwt.sign({ idUser }, process.env.JWT_SECRET, {
-    expiresIn: 600
+    expiresIn: 3000
   })
 }

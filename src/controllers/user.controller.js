@@ -69,7 +69,7 @@ exports.create = (request, response) => {
     console.log(err)
     if (err.code == 'ER_DUP_ENTRY') {
       let feedback = err.sqlMessage.indexOf("key 'email'") != -1 ? 'Email já cadastrado.' :
-        err.sqlMessage.indexOf("key 'cpfUser'") != -1 ? 'CPF já cadastrado.' : ''
+        err.sqlMessage.indexOf("key 'cpf'") != -1 ? 'CPF já cadastrado.' : ''
       response.json(new Response(false, feedback))
       return
     }
@@ -157,7 +157,7 @@ exports.getCategories = (request, response) => {
 exports.login = (request, response) => {
   User.login(request.body.email, request.body.senha)
   .then(res => {
-    response.json(new Response(!!res, !res ? 'Email e/ou senha incorretos.' : 'Login válido', res));
+    response.json(new Response(!!res, typeof res == 'string' ? res : 'Login válido', res));
   })
   .catch(err => {
     console.log(err)

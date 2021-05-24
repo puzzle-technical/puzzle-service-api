@@ -100,12 +100,14 @@ User.removeSubcategory = async (idUser, idSubcategory) => {
 
 User.login = async (email, senha) => {
   const result = await con.query('SELECT * FROM tb_users WHERE email = ?', [email.toLowerCase()])
-  if (!result[0].length) return false
+  if (!result[0].length) return 'Email e/ou senha incorretos.'
   let user = result[0][0]
   // console.log(user);
   let validPassword = user.senha == auth.combineSenhaSalt(senha, user.senhaSalt).senha
+  if (!validPassword) return 'Email e/ou senha incorretos.'
   let validStatus = user.status.toLowerCase() == 'ativo'
-  return validPassword && validStatus ? { user, token: auth.generateToken(user.idUser) } : false
+  if (!validPassword) return 'Esta conta está esperando aprovação. Quando ela for aprovada você receberá um email de confirmação.'
+  return { user, token: auth.generateToken(user.idUser) }
 }
 
 User.getLocations = async (idUser) => {

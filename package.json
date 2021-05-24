@@ -6,7 +6,8 @@
   "scripts": {
     "start": "nodemon server.js",
     "populate-db": "node populate-db.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "admin-create": "node admin-operations.js create"
   },
   "author": "",
   "license": "ISC",

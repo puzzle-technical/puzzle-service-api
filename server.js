@@ -22,6 +22,9 @@ app.get('/api', async (req, res) => {
 
 // routers
 
+const adminRoutes = require('./src/routes/admin.routes');
+app.use('/api/admin', adminRoutes);
+
 const userRoutes = require('./src/routes/user.routes');
 app.use('/api/users', userRoutes);
 
