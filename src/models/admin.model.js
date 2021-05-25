@@ -35,4 +35,15 @@ Admin.login = async (email, senha) => {
   return validPassword ? { user, token: auth.generateToken(user.idUser) } : false
 }
 
+Admin.findActiveUsers = async () => {
+  const result = await con.query(`SELECT * FROM tb_users WHERE status = 'ativo'`)
+  return result[0]
+}
+
+Admin.findPendingUsers = async () => {
+  const result = await con.query(`SELECT * FROM tb_users WHERE status = 'pendente'`)
+  return result[0]
+}
+
+
 module.exports = Admin

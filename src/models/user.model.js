@@ -20,7 +20,7 @@ const User = function (user) {
   this.cep = user.cep
   this.avaliacao = user.avaliacao
   this.infoAdicional = user.infoAdicional
-  this.puzzlePoints = user.puzzlePoints
+  this.puzzlePoints = user.puzzlePoints || 0
 
   let { senha, salt } = auth.gerarSenha(user.senha)
   this.senha = senha
@@ -106,7 +106,7 @@ User.login = async (email, senha) => {
   let validPassword = user.senha == auth.combineSenhaSalt(senha, user.senhaSalt).senha
   if (!validPassword) return 'Email e/ou senha incorretos.'
   let validStatus = user.status.toLowerCase() == 'ativo'
-  if (!validPassword) return 'Esta conta está esperando aprovação. Quando ela for aprovada você receberá um email de confirmação.'
+  if (!validStatus) return 'Esta conta está esperando aprovação. Quando ela for aprovada você receberá um email de confirmação.'
   return { user, token: auth.generateToken(user.idUser) }
 }
 

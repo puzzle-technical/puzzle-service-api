@@ -23,3 +23,25 @@ exports.validateToken = (request, response) => {
     response.json(new Response(false));
   })
 }
+
+exports.findActiveUsers = (request, response) => {
+  Admin.findActiveUsers()
+  .then(res => {
+    response.json(new Response(true, 'Usuarios encontrados com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
+exports.findPendingUsers = (request, response) => {
+  Admin.findPendingUsers()
+  .then(res => {
+    response.json(new Response(true, 'Usuarios encontrados com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}

@@ -157,7 +157,7 @@ exports.getCategories = (request, response) => {
 exports.login = (request, response) => {
   User.login(request.body.email, request.body.senha)
   .then(res => {
-    response.json(new Response(!!res, typeof res == 'string' ? res : 'Login válido', res));
+    response.json(new Response(typeof res != 'string', typeof res == 'string' ? res : 'Login válido', res));
   })
   .catch(err => {
     console.log(err)
