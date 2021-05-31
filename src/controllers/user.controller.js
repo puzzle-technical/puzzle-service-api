@@ -2,7 +2,8 @@
 const User = require('../models/user.model');
 const Response = require('../utills/response')
 const path = require('path')
-
+const { sendMail } = require('../services/mailer')
+const { forgottenPasswordMessage } = require('../services/mailer/mail')
 
 exports.findByType = (request, response) => {
   User.findByType(request.params.tipoUser)
@@ -79,6 +80,17 @@ exports.create = (request, response) => {
 
 exports.update = (request, response) => {
   User.update(request.params.id, request.body)
+  .then(res => {
+    response.json(new Response(true, 'Informações atualizadas com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
+exports.updatePassword = (request, response) => {
+  User.updatePassword(request.params.id, request.body.password)
   .then(res => {
     response.json(new Response(true, 'Informações atualizadas com sucesso', res));
   })
@@ -263,6 +275,22 @@ exports.openService = (request, response) => {
   User.openService(request.body.idUser, request.body.idService)
   .then(res => {
     response.json(new Response(true, 'Serviço salvo com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
+exports.forgottenPassword = (request, response) => {
+  User.restorePassword(request.body.email)
+  .then(async res => {
+    if (res == 'USER_NOT_FOUND') return response.json(new Response(false, 'Email não encontrado. Certifíque-se de que este é o email da sua conta na plataforma.', null))
+
+    await sendMail(request.body.email, 'Restauração de senha', forgottenPasswordMessage(res))
+    .then(res => {
+      response.json(new Response(true, 'Email enviado com sucesso', null))
+    })
   })
   .catch(err => {
     console.log(err)

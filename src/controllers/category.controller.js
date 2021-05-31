@@ -28,10 +28,32 @@ exports.create = (request, response) => {
   })
 }
 
+exports.createSubcategory = (request, response) => {
+  Category.createSubcategory(request.body)
+  .then(res => {
+    response.json(new Response(true, 'Subcategoria criada com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
 exports.update = (request, response) => {
   Category.update(request.params.id, request.body)
   .then(res => {
     response.json(new Response(true, 'Categoria atualizada com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
+
+exports.updateSubcategory = (request, response) => {
+  Category.updateSubcategory(request.params.id, request.body)
+  .then(res => {
+    response.json(new Response(true, 'Subcategoria atualizada com sucesso', res));
   })
   .catch(err => {
     console.log(err)
@@ -50,6 +72,16 @@ exports.delete = (request, response) => {
   })
 }
 
+exports.deleteSubcategory = (request, response) => {
+  Category.deleteSubcategory(request.params.id)
+  .then(res => {
+    response.json(new Response(true, 'Subcategoria removido com sucesso', res));
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })
+}
 
 exports.findSubcategory = (request, response) => {
   Category.findSubcategory(request.query['idSubcategory'])

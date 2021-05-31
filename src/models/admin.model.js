@@ -14,7 +14,7 @@ const Admin = function(admin) {
 
 
 Admin.findByID = async (idAdmin) => {
-  let user = await con.query('SELECT * FROM tb_users WHERE idAdmin = ?', [idAdmin]);
+  let user = await con.query('SELECT * FROM tb_admin WHERE idAdmin = ?', [idAdmin]);
   if (!user || user[0].length < 1) return null;
   return user[0][0];
 }

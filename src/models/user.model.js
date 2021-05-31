@@ -61,7 +61,20 @@ User.create = async (user) => {
 }
 
 User.update = async (id, user) => {
+  console.log(user);
+  if (Object.keys(user).includes('senha')) {
+    let { senha, salt } = auth.gerarSenha(user.senha)
+    user.senha = senha
+    user.senhaSalt = salt
+  }
   const result = await con.query('UPDATE tb_users SET ? WHERE idUser = ?', [user, Number(id)]);
+  return result[0];
+}
+
+User.updatePassword = async (id, password) => {
+  let { senha, salt } = auth.gerarSenha(password)
+  let set = { senha: senha, senhaSalt: salt }
+  const result = await con.query('UPDATE tb_users SET ? WHERE idUser = ?', [set, Number(id)]);
   return result[0];
 }
 
@@ -148,6 +161,16 @@ User.openService = async (idUser, idService) => {
 
   let result = await con.query(`INSERT INTO tb_users_openedservices SET ?`, { idUser, idService })
   return result
+}
+
+User.restorePassword = async (email) => {
+  let user = await con.query('SELECT * FROM tb_users WHERE email = ?', [email]);
+  if (!user || user[0].length < 1) return 'USER_NOT_FOUND';
+  user = user[0][0];
+  
+  let password = 'PZ1' + auth.gerarSalt(5)
+  User.updatePassword(user.idUser, password)
+  return password
 }
 
 module.exports = User;

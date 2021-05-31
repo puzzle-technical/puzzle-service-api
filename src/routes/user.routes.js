@@ -18,6 +18,8 @@ router.post('/create', userController.create);
 
 router.put('/update/:id', userController.update);
 
+router.put('/updatePassword/:id', userController.updatePassword);
+
 router.delete('/delete/:id', userController.delete);
 
 router.post('/addSubcategory', userController.addSubcategory);
@@ -46,6 +48,8 @@ router.get('/:idUser/getOpenedServices', userController.getOpenedServices)
 
 router.post('/addOpenedService', userController.addOpenedService)
 
-router.post('/openService', userController.openService);
+router.post('/openService', userController.openService)
+
+router.post('/forgottenPassword', userController.forgottenPassword)
 
 module.exports = router;

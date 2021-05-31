@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const cors = require('cors')
-const bodyParser = require('body-parser');
 const dbConn = require('./config/db.config');
 
 const app = express();
@@ -10,15 +9,14 @@ const port = process.env.APP_PORT || 3000;
 
 app.use(fileUpload());
 app.use(cors())
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
 
 app.get('/api', async (req, res) => {
   var result = await dbConn.query("SHOW TABLES")
   .catch(err => console.log(err));
   res.json(result[0])
 })
-
 
 // routers
 

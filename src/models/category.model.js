@@ -26,14 +26,31 @@ Category.create = async (category) => {
   return result[0];
 }
 
+Category.createSubcategory = async (category) => {
+  const newCategory = new Category(category);
+
+  const result = await con.query('INSERT INTO tb_subcategories SET ?', newCategory);
+  return result[0];
+}
 
 Category.update = async (id, category) => {
   const result = await con.query('UPDATE tb_categories SET ? WHERE idCategory = ?', [category, Number(id)]);
   return result[0];
 }
 
+
+Category.updateSubcategory = async (id, subcategory) => {
+  const result = await con.query('UPDATE tb_subcategories SET ? WHERE idSubcategory = ?', [subcategory, Number(id)]);
+  return result[0];
+}
+
 Category.delete = async (id) => {
   const result = await con.query('DELETE FROM tb_categories WHERE idCategory = ?', [id]);
+  return result[0];
+}
+
+Category.deleteSubcategory = async (id) => {
+  const result = await con.query('DELETE FROM tb_subcategories WHERE idSubcategory = ?', [id]);
   return result[0];
 }
 
@@ -79,6 +96,7 @@ Category.getSubcategoriesGroups = async () => {
     pushToResult({
       idCategory: cat.idCategory,
       nome: cat.nome,
+      image: cat.image,
       subcategories
     })
   }
