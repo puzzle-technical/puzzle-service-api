@@ -21,6 +21,7 @@ const User = function (user) {
   this.avaliacao = user.avaliacao
   this.infoAdicional = user.infoAdicional
   this.puzzlePoints = user.puzzlePoints || 0
+  this.avatar = user.avatar
 
   let { senha, salt } = auth.gerarSenha(user.senha)
   this.senha = senha
@@ -171,6 +172,11 @@ User.restorePassword = async (email) => {
   let password = 'PZ1' + auth.gerarSalt(5)
   User.updatePassword(user.idUser, password)
   return password
+}
+
+User.addPuzzlePoints = async (idUser, points) => {
+  let result = await con.query(`UPDATE tb_users SET puzzlePoints = puzzlePoints + ${points} WHERE idUser = ${idUser}`)
+  return result[0]
 }
 
 module.exports = User;

@@ -1,2 +1,8 @@
 /node_modules/*
 .env
+
+# user images
+public/img/users/*
+
+# user rename images script
+rename-users.js

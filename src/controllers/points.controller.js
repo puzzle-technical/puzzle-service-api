@@ -1,4 +1,5 @@
 const Points = require('../models/points.model');
+const User = require('../models/user.model');
 const Response = require('../utills/response')
 
 exports.getServicePoints = (request, response) => {
@@ -16,14 +17,22 @@ exports.getPacks = (request, response) => {
   response.json(new Response(true, 'Pacotes encontrados com sucesso', packs))
 }
 
-exports.createCheckoutSession = (request, response) => {
-  Points.createCheckoutSession(request.body.idPack, request.body.email)
-  .then(res => {
-    response.json(new Response(true, 'Sessão criada com sucesso', res));
+exports.payment = async (request, response) => {
+  let { paymentId, amount, quantity, email, idUser } = request.body
+  
+  Points.handlePayment(paymentId, amount, quantity, email)
+  .then(payment => {
+    User.addPuzzlePoints(idUser, quantity)
+    .then(res => {
+      response.json(new Response(true, 'Operação bem sucedida', payment))
+    })
+    .catch(err => {
+      console.log(err)
+      response.json(new Response(false))
+    })
   })
   .catch(err => {
     console.log(err)
-    response.json(new Response(false));
+    response.json(new Response(false))
   })
-  
 }

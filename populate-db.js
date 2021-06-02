@@ -18,7 +18,8 @@ let categories = {
   'Construção': ['Construção de casas', 'Construção de telhados', 'Construção de muros', 'Construção de piscinas'],
   'Hidráulica': ['Instalações hidráulicas', 'Manutenção de encanamento', 'Manutenção de piscinas', "Manutenção de bomba d'água"],
   'Reformas': ['Reformas de banheiros', 'Reformas de cozinhas', 'Reformas de escritórios', 'Reformas de imóveis'],
-  'Elétrica': ['Instalações elétricas', 'Troca de disjuntores', 'Fiações elétricas', 'Iluminações', 'Quadros e painéis elétricos', 'Instalação de força elétrica']
+  'Elétrica': ['Instalações elétricas', 'Troca de disjuntores', 'Fiações elétricas', 'Iluminações', 'Quadros e painéis elétricos', 'Instalação de força elétrica'],
+  'Limpeza': ['Limpeza doméstica', 'Faxina', 'Jardinagem']
 }
 
   
@@ -105,6 +106,7 @@ Object.keys(categories).forEach(async cat => {
 })
 
 // users
+let usersIds = []
 
 for (let i = 0; i < 30; i++) {
   let name = generateName();
@@ -123,6 +125,7 @@ for (let i = 0; i < 30; i++) {
     bairro: generateBairro(),
     cidade: generateCity(),
     uf: "PE",
+    avatar: `${process.env.APP_HOST}:${process.env.APP_PORT}/img/users/user_${i+1}.jpg`,
     cep: generateCep(),
     avaliacao: Math.random() * 5,
     senha: 'senha123'
@@ -195,27 +198,17 @@ for (let i = 0; i < 15; i++) {
       for (let index = 0; index < rand(3) + 1; index++) {
         Service.addSubcategory(id, rand(17) + 1)      
       }
+      for (let j = 0; j < rand(3)+1; j++) {
+        let budget = {
+          idUser: rand(14) + 16,
+          idService: id,
+          status: 'aberto',
+          descricao: d[rand(3)],
+          dataFinal: new Date()
+        }
+        Budget.create(budget)
+        .then().catch(err => { console.log(err) })
+      }
     }).catch(err => { console.log(err) })
   }
 }
-
-
-// for (let i = 0; i < 15; i++) {
-//   for (let j = 0; j < rand(3)+1; j++) {
-//     let budget = {
-//       idProvider: rand(10),
-//       idService: i,
-//       descricao: "Lorem ipsum dolor sic mundus creatus est. Imagine que este é um texto bastante longo.",
-//       dataFinal: "2020-12-10 12:54"
-//     }
-//     Budget.create(budget)
-//     .then().catch(err => { console.log(err) })
-//   }
-// }
-
-// for (let i = 0; i < 15; i++) {
-//   for (let j = 0; j < rand(3); j++) {
-//     Service.addCategory(rand(10), rand(10))
-//     .then().catch(err => { console.log(err) })
-//   }
-// }

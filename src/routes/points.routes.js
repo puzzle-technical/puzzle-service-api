@@ -9,6 +9,6 @@ router.get('/getPointsPrice', pointsController.getPointsPrice);
 
 router.get('/getPacks', pointsController.getPacks);
 
-router.post('/createCheckoutSession', pointsController.createCheckoutSession);
+router.post('/payment', pointsController.payment);
 
 module.exports = router;

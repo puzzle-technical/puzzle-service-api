@@ -2,7 +2,6 @@
 var con = require('../../config/db.config');
 
 const Service = function(service) {
-  this.idService = service.idService;
   this.nome = service.nome;
   this.status = service.status;
   this.descricao = service.descricao;
