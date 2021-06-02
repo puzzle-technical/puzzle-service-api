@@ -93,6 +93,7 @@ Service.create = async (service) => {
 }
 
 Service.update = async (id, service) => {
+  console.log(service);
   const result = await con.query('UPDATE tb_services SET ? WHERE idService = ?', [service, Number(id)]);
   return result[0];
 }

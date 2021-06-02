@@ -25,7 +25,7 @@ Budget.find = async (idBudget = undefined) => {
 
 
 Budget.findByService = async (idService) => {
-  const result = await con.query('SELECT * FROM tb_budgets WHERE idService = ?', [idService]);
+  const result = await con.query(`SELECT * FROM tb_budgets WHERE idService = ? and status != 'recusado'`, [idService]);
   return result[0];
 }
 

@@ -62,13 +62,14 @@ User.create = async (user) => {
 }
 
 User.update = async (id, user) => {
-  console.log(user);
+  // console.log(user);
   if (Object.keys(user).includes('senha')) {
     let { senha, salt } = auth.gerarSenha(user.senha)
     user.senha = senha
     user.senhaSalt = salt
   }
   const result = await con.query('UPDATE tb_users SET ? WHERE idUser = ?', [user, Number(id)]);
+  console.log(result);
   return result[0];
 }
 
