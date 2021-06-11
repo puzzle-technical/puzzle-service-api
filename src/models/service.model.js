@@ -57,7 +57,7 @@ Service.findBySubcategories = async (subcategoriesIds, idUser) => {
       user: user[0][0],
     })
   }
-  return result
+  return result.sort((a, b) => b.dataPublic - a.dataPublic)
 }
 
 

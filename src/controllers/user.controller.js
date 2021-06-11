@@ -297,3 +297,59 @@ exports.forgottenPassword = (request, response) => {
     response.json(new Response(false));
   })
 }
+
+exports.getRating = (request, response) => {
+  User.getRating(request.params.idRatedUser)
+  .then(res => {
+    response.json(new Response(true, 'Avaliações recebidas com sucesso.', res))
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })  
+}
+
+exports.addRating = (request, response) => {
+  User.addRating(request.body.rating)
+  .then(res => {
+    response.json(new Response(true, 'Avaliação adicionada com sucesso.', res))
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })  
+}
+
+exports.updateRating = (request, response) => {
+  User.updateRating(request.body.rating)
+  .then(res => {
+    response.json(new Response(true, 'Avaliação atualizada com sucesso.', res))
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })  
+}
+
+exports.deleteRating = (request, response) => {
+  User.deleteRating(request.body.rating)
+  .then(res => {
+    response.json(new Response(true, 'Avaliação removida com sucesso.', res))
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })  
+}
+
+
+exports.checkRatingExists = (request, response) => {
+  User.checkRatingExists(request.params.idRatedUser, request.params.idEvaluatorUser)
+  .then(res => {
+    response.json(new Response(true, 'Avaliação checada com sucesso.', res))
+  })
+  .catch(err => {
+    console.log(err)
+    response.json(new Response(false));
+  })  
+}

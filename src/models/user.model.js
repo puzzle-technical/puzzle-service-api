@@ -180,4 +180,39 @@ User.addPuzzlePoints = async (idUser, points) => {
   return result[0]
 }
 
+User.checkRatingExists = async (idRatedUser, idEvaluatorUser) => {
+  let result = await con.query(`SELECT * FROM tb_users_ratings WHERE idRatedUser = ${idRatedUser} AND idEvaluatorUser = ${idEvaluatorUser}`)
+  // console.log(result[0]);
+  return !!(result[0] && result[0].length)
+}
+
+User.getRating = async (idRatedUser) => {
+  let average = await con.query(`SELECT AVG(value) FROM tb_users_ratings WHERE idRatedUser = ?`, [idRatedUser])
+  let count = await con.query(`SELECT COUNT(value) FROM tb_users_ratings WHERE idRatedUser = ?`, [idRatedUser])
+  average = average[0][0]['AVG(value)']
+  count = count[0][0]['COUNT(value)']
+  return {
+    average,
+    count
+  }
+}
+
+User.addRating = async (rating) => {
+  let result = await con.query(`INSERT INTO tb_users_ratings SET ?`, rating)
+  return result[0]
+}
+
+User.updateRating = async (rating) => {
+  let { idRatedUser, idEvaluatorUser, value } = rating
+  let result = await con.query(`UPDATE tb_users_ratings SET ? WHERE idRatedUser = ${idRatedUser} AND idEvaluatorUser = ${idEvaluatorUser}`, { value })
+  return result[0]
+}
+
+User.deleteRating = async (rating) => {
+  let { idRatedUser, idEvaluatorUser } = rating
+  let result = await con.query(`DELETE FROM tb_users_ratings WHERE idRatedUser = ${idRatedUser} AND idEvaluatorUser = ${idEvaluatorUser}`)
+  return result[0]
+}
+
+
 module.exports = User;

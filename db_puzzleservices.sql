@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_categories` (
   `idCategory` INT(9) NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(80) NOT NULL UNIQUE,
   `image` VARCHAR(150),
+  `status` ENUM('ativo', 'inativo') NOT NULL DEFAULT 'ativo',
   PRIMARY KEY (`idCategory`));
 
   
@@ -69,6 +70,7 @@ CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_subcategories` (
   `idSubcategory` INT(9) NOT NULL AUTO_INCREMENT,
   `idCategory` INT(9) NOT NULL,
   `nome` VARCHAR(80) NOT NULL UNIQUE,
+  `status` ENUM('ativo', 'inativo') NOT NULL DEFAULT 'ativo',
   PRIMARY KEY (`idSubcategory`),
   INDEX `fk_subcategories_idCategory` (`idCategory` ASC),
   CONSTRAINT `fk_subcategories_idCategory`
@@ -227,6 +229,27 @@ CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_services_locations` (
     ON DELETE CASCADE
     ON UPDATE NO ACTION);
 
+
+-- -----------------------------------------------------
+-- Table `db_puzzleservices`.`tb_users_ratings`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_users_ratings` (
+  `idRatedUser` INT(9) NOT NULL,
+  `idEvaluatorUser` INT(9) NOT NULL,
+  `value` INT(9) NOT NULL,
+  PRIMARY KEY (`idRatedUser`,`idEvaluatorUser`),
+  INDEX `fk_users_openedservices_idRatedUser` (`idRatedUser` ASC),
+  INDEX `fk_users_openedservices_idEvaluatorUser` (`idEvaluatorUser` ASC),
+  CONSTRAINT `fk_users_openedservices_idRatedUser`
+    FOREIGN KEY (`idRatedUser`)
+    REFERENCES `db_puzzleservices`.`tb_users` (`idUser`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_users_openedservices_idEvaluatorUser`
+    FOREIGN KEY (`idEvaluatorUser`)
+    REFERENCES `db_puzzleservices`.`tb_users` (`idUser`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION);
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

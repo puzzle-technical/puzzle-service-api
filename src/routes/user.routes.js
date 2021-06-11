@@ -52,4 +52,14 @@ router.post('/openService', userController.openService)
 
 router.post('/forgottenPassword', userController.forgottenPassword)
 
+router.get('/getRating/:idRatedUser', userController.getRating)
+
+router.post('/addRating', userController.addRating)
+
+router.post('/updateRating', userController.updateRating)
+
+router.delete('/deleteRating', userController.deleteRating)
+
+router.get('/checkRatingExists/:idRatedUser/:idEvaluatorUser', userController.checkRatingExists)
+
 module.exports = router;

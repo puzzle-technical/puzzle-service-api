@@ -13,6 +13,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
 app.get('/api', async (req, res) => {
+  console.log('hello world');
   var result = await dbConn.query("SHOW TABLES")
   .catch(err => console.log(err));
   res.json(result[0])
