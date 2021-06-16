@@ -10,7 +10,7 @@ const Service = function (service) {
   this.idUser = service.idUser
   this.receivers = service.receivers
   this.receiversOnly = service.receiversOnly
-  this.dataExp = moment(service.dataPublic).add(3, 'days').format('YYYY-MM-DD')
+  this.dataExp = moment(service.dataPublic).add(2, 'days').format('YYYY-MM-DD')
 }
 
 Service.find = async (idService = undefined) => {
@@ -242,7 +242,7 @@ Service.updateSubcategories = async (idService, subcategoriesIds) => {
 
 Service.getOpenedServices = async (idUser) => {
   let result = await con.query(
-    `SELECT s.* FROM tb_services s, tb_users_openedservices os WHERE s.idService = os.idService AND os.idUser = ?  ORDER BY idService DESC`,
+    `SELECT s.* FROM tb_services s, tb_users_openedservices os WHERE s.idService = os.idService AND s.status = 'aberto' AND os.idUser = ?  ORDER BY idService DESC`,
     [idUser]
   )
   return result[0]
