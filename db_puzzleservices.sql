@@ -107,9 +107,10 @@ CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_users_subcategories` (
 CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_services` (
   `idService` INT(9) NULL DEFAULT NULL AUTO_INCREMENT,
   `nome` VARCHAR(100) NOT NULL,
-  `status` ENUM('rascunho', 'aberto', 'fechado', 'inativo') NOT NULL DEFAULT 'rascunho',
-  `descricao` VARCHAR(300) NOT NULL,
+  `status` ENUM('rascunho', 'aberto', 'fechado', 'inativo', 'expirado') NOT NULL DEFAULT 'rascunho',
+  `descricao` VARCHAR(250) NOT NULL,
   `dataPublic` DATETIME NOT NULL,
+  `dataExp` DATE NOT NULL,
   `idUser` INT(9) NOT NULL,
   `idBudget` INT(9) NULL,
   `receivers` VARCHAR(150),
@@ -129,8 +130,8 @@ CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_services` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_budgets` (
   `idBudget` INT(9) NOT NULL AUTO_INCREMENT,
-  `descricao` VARCHAR(300) NOT NULL,
-  `status` ENUM('recusado', 'selecionado', 'aberto') NOT NULL DEFAULT 'aberto',
+  `descricao` VARCHAR(250) NOT NULL,
+  `status` ENUM('recusado', 'selecionado', 'aberto', 'cancelado', 'concluido') NOT NULL DEFAULT 'aberto',
   `dataPublic` DATETIME NULL DEFAULT NULL,
   `idService` INT(9) NOT NULL,
   `idUser` INT(9) NOT NULL,
@@ -247,6 +248,24 @@ CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_users_ratings` (
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_users_openedservices_idEvaluatorUser`
     FOREIGN KEY (`idEvaluatorUser`)
+    REFERENCES `db_puzzleservices`.`tb_users` (`idUser`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION);
+
+
+-- -----------------------------------------------------
+-- Table `db_puzzleservices`.`tb_notifications`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `db_puzzleservices`.`tb_notifications` (
+  `idNotification` INT(9) NOT NULL AUTO_INCREMENT,
+  `status` ENUM('pendente', 'visto', 'inativo') NOT NULL DEFAULT 'pendente',
+  `idUser` INT(9) NOT NULL,
+  `message` VARCHAR(150) NOT NULL,
+  `data` DATETIME NOT NULL,
+  PRIMARY KEY (`idNotification`),
+  INDEX `fk__notification_idUser` (`idUser` ASC),
+  CONSTRAINT `fk__notification_idUser`
+    FOREIGN KEY (`idUser`)
     REFERENCES `db_puzzleservices`.`tb_users` (`idUser`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION);
